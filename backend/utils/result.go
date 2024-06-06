@@ -9,28 +9,37 @@ type Result struct {
 }
 
 func Success(data interface{}, msg string) Result {
-	Result := Result{
+	result := Result{
 		Code: constant.SuccessCode,
 		Data: data,
 		Msg:  msg,
 	}
-	return Result
+	return result
 }
 
 func SuccessData(data interface{}) Result {
-	Result := Result{
+	result := Result{
 		Code: constant.SuccessCode,
 		Data: data,
 		Msg:  "success",
 	}
-	return Result
+	return result
 }
 
 func SuccessMsg(msg string) Result {
-	Result := Result{
+	result := Result{
 		Code: constant.SuccessCode,
 		Data: nil,
 		Msg:  msg,
 	}
-	return Result
+	return result
+}
+
+func Error(msg string) Result {
+	result := Result{
+		Code: constant.ErrorCode,
+		Data: nil,
+		Msg:  msg,
+	}
+	return result
 }

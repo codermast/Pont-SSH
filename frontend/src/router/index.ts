@@ -1,13 +1,12 @@
 import { createRouter, createWebHistory } from 'vue-router';
-
-import Connection from "../pages/Connection.vue";
-import ExecCommand from "../pages/ExecCommand.vue";
+import Home from '../pages/Home.vue';
+import ExecCommand from "../components/ExecCommand.vue";
 
 const routes = [
     {
         path: '/',
-        name: 'Connection',
-        component: Connection
+        name: 'Home',
+        component: Home
     },
     {
         path: '/exec',

@@ -3,6 +3,8 @@
 import {service} from '../models';
 import {utils} from '../models';
 
-export function CreateConnection(arg1:service.SSHConnection):Promise<utils.Result>;
+export function CreateConnection(arg1:service.SSHConfig):Promise<utils.Result>;
 
 export function ExecCommand(arg1:string):Promise<utils.Result>;
+
+export function SaveConnection(arg1:service.SSHConfig):Promise<utils.Result>;

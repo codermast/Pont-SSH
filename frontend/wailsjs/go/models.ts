@@ -1,6 +1,6 @@
 export namespace service {
 	
-	export class SSHConnection {
+	export class SSHConfig {
 	    server: string;
 	    port: number;
 	    username: string;
@@ -8,7 +8,7 @@ export namespace service {
 	    key_path: string;
 	
 	    static createFrom(source: any = {}) {
-	        return new SSHConnection(source);
+	        return new SSHConfig(source);
 	    }
 	
 	    constructor(source: any = {}) {

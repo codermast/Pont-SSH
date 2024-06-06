@@ -9,3 +9,7 @@ export function CreateConnection(arg1) {
 export function ExecCommand(arg1) {
   return window['go']['service']['Connection']['ExecCommand'](arg1);
 }
+
+export function SaveConnection(arg1) {
+  return window['go']['service']['Connection']['SaveConnection'](arg1);
+}

@@ -3,7 +3,13 @@
 </script>
 
 <template>
-  <router-view></router-view>
+
+  <n-modal-provider>
+    <n-message-provider>
+      <router-view></router-view>
+    </n-message-provider>
+  </n-modal-provider>
+
 </template>
 <style scoped>
 
