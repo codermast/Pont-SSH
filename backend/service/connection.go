@@ -2,6 +2,7 @@ package service
 
 import (
 	"PontSsh/backend/database"
+	"PontSsh/backend/entity"
 	"PontSsh/backend/utils"
 	"context"
 	"fmt"
@@ -11,15 +12,6 @@ import (
 // Connection 连接结构体
 type Connection struct {
 	ctx context.Context
-}
-
-// SSHConfig SSH 连接配置结构体
-type SSHConfig struct {
-	Server   string `json:"server" yaml:"server"`
-	Port     int    `json:"port" yaml:"port"`
-	Username string `json:"username" yaml:"username"`
-	Password string `json:"password" yaml:"password"`
-	KeyPath  string `json:"key_path" json:"keyPath"`
 }
 
 // 连接 Client 全局变量
@@ -43,7 +35,7 @@ func (c *Connection) Shutdown(ctx context.Context) {
 }
 
 // CreateConnection 创建一个新连接
-func (c *Connection) CreateConnection(sshConfig SSHConfig) utils.Result {
+func (c *Connection) CreateConnection(sshConfig entity.SSHConfig) utils.Result {
 	server := sshConfig.Server
 	port := sshConfig.Port
 	socket := fmt.Sprintf("%s:%d", server, port)
@@ -78,13 +70,11 @@ func (c *Connection) CreateConnection(sshConfig SSHConfig) utils.Result {
 }
 
 // SaveConnection 保存新连接
-func (c *Connection) SaveConnection(sshConnection SSHConfig) utils.Result {
-	err := database.InitDatabase()
+func (c *Connection) SaveConnection(sshConfig entity.SSHConfig) utils.Result {
+	err := database.SaveSshConnect(sshConfig)
 	if err != nil {
-		return utils.Error("数据库初始化异常！")
+		return utils.Error("保存失败！")
 	}
-
-	database.Execute("INSERT INFO ssh ()")
 	return utils.SuccessMsg("保存成功！")
 }
 

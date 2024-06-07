@@ -1,6 +1,7 @@
 package main
 
 import (
+	"PontSsh/backend/constant"
 	"PontSsh/backend/service"
 	"embed"
 	"github.com/wailsapp/wails/v2"
@@ -17,9 +18,11 @@ func main() {
 
 	// Create application with options
 	err := wails.Run(&options.App{
-		Title:  "Pont SSH 连接工具",
-		Width:  1024,
-		Height: 768,
+		Title:     "Pont SSH 连接工具",
+		Width:     1024,
+		Height:    768,
+		MinWidth:  constant.MIN_WINDOW_WIDTH,
+		MinHeight: constant.MIN_WINDOW_HEIGHT,
 		AssetServer: &assetserver.Options{
 			Assets: assets,
 		},

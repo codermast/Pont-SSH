@@ -1,8 +1,7 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
-import { service } from '../../wailsjs/go/models'
-import { CreateConnection } from '../../wailsjs/go/service/Connection'
-import { useRouter } from 'vue-router'
+import { entity } from '../../wailsjs/go/models'
+import { CreateConnection,SaveConnection } from '../../wailsjs/go/service/Connection'
 import { useMessage } from 'naive-ui'
 import { useDialogStore } from "../stores/dialogStore";
 import { storeToRefs } from "pinia";
@@ -17,27 +16,22 @@ watch(newConnectDialogVisible, (newValue) => {
 })
 
 const message = useMessage();
-let sshConfig = ref(service.SSHConfig.createFrom({
-  server: "10.211.55.17",
+let sshConfig = ref(entity.SSHConfig.createFrom({
+  server: "",
   port: 22,
-  username: "codermast",
-  password: "dongpeng@123.",
-  keyPath: "null"
+  username: "",
+  password: "",
+  keyPath: ""
 }))
 
 function testConnect() {
-  CreateConnection(sshConfig.value).then((connection) => {
+  CreateConnection(sshConfig.value).then((result) => {
 
     // 1. 判断是否成功
-    if (connection.code == 200) {
-      console.log("成功", connection);
-      message.success("连接成功");
-      // 两秒后进行路由跳转
-      // setTimeout(() => {
-      //   router.push("/exec")
-      // }, 2000)
+    if (result.code == 200) {
+      message.success(result.msg);
     } else {
-      console.log("失败", connection);
+        message.error(result.msg);
     }
   })
 }
@@ -45,14 +39,18 @@ function testConnect() {
 // 确认点击
 function saveConnect() {
   // 将 ssh 连接信息存入后端的数据库中
-  message.success("保存成功")
-  showModal.value = false;
-  console.log("保存")
+  SaveConnection(sshConfig.value).then((result) => {
+    if (result.code == 200) {
+      message.success(result.msg)
+      showModal.value = false;
+    }else{
+      message.error(result.msg)
+    }
+  })
 }
 
 // 取消点击
 function cancelClick() {
-  message.warning("创建取消")
   showModal.value = false;
 }
 </script>
@@ -68,26 +66,44 @@ function cancelClick() {
       <template #header>
         表头
       </template>
-      <n-form
-          :label-width="80"
-          :model="sshConfig"
-          label-placement="left"
-          style="max-width: 600px;"
-      >
-        <n-form-item label="服务器IP">
-          <n-input v-model:value="sshConfig.server" placeholder="输入服务器IP"/>
-        </n-form-item>
-        <n-form-item label="端口">
-          <n-input v-model:value="sshConfig.port" placeholder="输入端口"/>
-        </n-form-item>
-        <n-form-item label="用户名">
-          <n-input v-model:value="sshConfig.username" placeholder="输入用户名"/>
-        </n-form-item>
-        <n-form-item label="密码">
-          <n-input v-model:value="sshConfig.password" placeholder="输入密码"/>
-        </n-form-item>
-      </n-form>
 
+      <n-tabs
+          type="line"
+          animated
+          placement="left"
+          tab-style="justify-content: right; font-weight: 420;"
+      >
+        <n-tab-pane name="basic" tab="基本设置">
+          <n-form
+              :label-width="80"
+              :model="sshConfig"
+              label-placement="left"
+              style="max-width: 600px;"
+          >
+            <n-form-item label="服务器IP">
+              <n-input v-model:value="sshConfig.server" placeholder="输入服务器IP"/>
+            </n-form-item>
+            <n-form-item label="端口">
+              <n-input v-model:value="sshConfig.port" placeholder="输入端口"/>
+            </n-form-item>
+            <n-form-item label="用户名">
+              <n-input v-model:value="sshConfig.username" placeholder="输入用户名"/>
+            </n-form-item>
+            <n-form-item label="密码">
+              <n-input v-model:value="sshConfig.password" placeholder="输入密码"/>
+            </n-form-item>
+          </n-form>
+        </n-tab-pane>
+        <n-tab-pane name="advance" tab="高级设置">
+          高级设置
+        </n-tab-pane>
+        <n-tab-pane name="proxy" tab="代理设置">
+          代理设置
+        </n-tab-pane>
+        <n-tab-pane name="other" tab="其他设置">
+          其他设置
+        </n-tab-pane>
+      </n-tabs>
       <template #footer>
         <div class="buttons-container">
           <n-button class="submitButton" type="info" @click="testConnect">

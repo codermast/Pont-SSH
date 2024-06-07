@@ -1,4 +1,4 @@
-export namespace service {
+export namespace entity {
 	
 	export class SSHConfig {
 	    server: string;

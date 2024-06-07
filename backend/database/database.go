@@ -1,6 +1,10 @@
 package database
 
-import "database/sql"
+import (
+	"database/sql"
+	"fmt"
+	_ "github.com/mattn/go-sqlite3"
+)
 
 // 数据库连接
 var db *sql.DB
@@ -29,9 +33,11 @@ func Query(query string) (*sql.Rows, error) {
 }
 
 // Execute 执行其他语句
-func Execute(query string) error {
-	_, err := db.Exec(query)
+func Execute(query string, args ...interface{}) error {
+	_, err := db.Exec(query, args...)
+
 	if err != nil {
+		fmt.Sprintln(err)
 		return err
 	}
 	return nil
