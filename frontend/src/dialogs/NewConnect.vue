@@ -17,10 +17,10 @@ watch(newConnectDialogVisible, (newValue) => {
 
 const message = useMessage();
 let sshConfig = ref(entity.SSHConfig.createFrom({
-  server: "",
+  server: "10.211.55.17",
   port: 22,
-  username: "",
-  password: "",
+  username: "codermast",
+  password: "dongpeng@123.",
   keyPath: ""
 }))
 
