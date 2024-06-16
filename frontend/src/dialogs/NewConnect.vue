@@ -1,10 +1,13 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
 import { entity } from '../../wailsjs/go/models'
-import { CreateConnection,SaveConnection } from '../../wailsjs/go/service/Connection'
+import { CreateConnection, SaveConnection } from '../../wailsjs/go/service/Connection'
 import { useMessage } from 'naive-ui'
 import { useDialogStore } from "../stores/dialogStore";
 import { storeToRefs } from "pinia";
+import { useRouter } from "vue-router";
+
+const router = useRouter()
 
 const dialogStore = useDialogStore()
 let {newConnectDialogVisible} = storeToRefs(dialogStore)
@@ -26,12 +29,13 @@ let sshConfig = ref(entity.SSHConfig.createFrom({
 
 function testConnect() {
   CreateConnection(sshConfig.value).then((result) => {
-
     // 1. 判断是否成功
     if (result.code == 200) {
       message.success(result.msg);
+
+      router.push({name: "Cmd"});
     } else {
-        message.error(result.msg);
+      message.error(result.msg);
     }
   })
 }
@@ -43,7 +47,7 @@ function saveConnect() {
     if (result.code == 200) {
       message.success(result.msg)
       showModal.value = false;
-    }else{
+    } else {
       message.error(result.msg)
     }
   })
@@ -80,6 +84,7 @@ function cancelClick() {
               label-placement="left"
               style="max-width: 600px;"
           >
+
             <n-form-item label="服务器IP">
               <n-input v-model:value="sshConfig.server" placeholder="输入服务器IP"/>
             </n-form-item>
@@ -90,8 +95,9 @@ function cancelClick() {
               <n-input v-model:value="sshConfig.username" placeholder="输入用户名"/>
             </n-form-item>
             <n-form-item label="密码">
-              <n-input v-model:value="sshConfig.password" placeholder="输入密码"/>
+              <n-input v-model:value="sshConfig.password" type="password" placeholder="输入密码"/>
             </n-form-item>
+
           </n-form>
         </n-tab-pane>
         <n-tab-pane name="advance" tab="高级设置">
@@ -109,11 +115,9 @@ function cancelClick() {
           <n-button class="submitButton" type="info" @click="testConnect">
             验证
           </n-button>
-
           <n-button class="submitButton" type="primary" @click="saveConnect">
             保存
           </n-button>
-
           <n-button class="submitButton" type="warning" @click="cancelClick">
             取消
           </n-button>
@@ -126,14 +130,12 @@ function cancelClick() {
 <style scoped>
 
 .main {
-  position: absolute;
-  top: -30vh;
   bottom: 0;
   left: 0;
   right: 0;
   margin: auto;
   width: 500px;
-  height: 400px;
+  max-height: 100vh;
 }
 
 .buttons-container {

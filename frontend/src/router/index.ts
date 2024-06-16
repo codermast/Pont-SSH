@@ -1,6 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import Home from '../pages/Home.vue';
-import ExecCommand from "../components/ExecCommand.vue";
+import Terminal from "../components/Terminal.vue";
 
 const routes = [
     {
@@ -9,9 +9,9 @@ const routes = [
         component: Home
     },
     {
-        path: '/exec',
-        name: 'ExecCommand',
-        component: ExecCommand
+        path: '/cmd',
+        name: 'Cmd',
+        component: Terminal
     },
 ];
 

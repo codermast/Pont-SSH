@@ -6,8 +6,8 @@ export function CreateConnection(arg1) {
   return window['go']['service']['Connection']['CreateConnection'](arg1);
 }
 
-export function ExecCommand(arg1) {
-  return window['go']['service']['Connection']['ExecCommand'](arg1);
+export function GetPrompt() {
+  return window['go']['service']['Connection']['GetPrompt']();
 }
 
 export function SaveConnection(arg1) {

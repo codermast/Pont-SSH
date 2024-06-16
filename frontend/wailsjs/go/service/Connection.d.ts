@@ -5,6 +5,6 @@ import {utils} from '../models';
 
 export function CreateConnection(arg1:entity.SSHConfig):Promise<utils.Result>;
 
-export function ExecCommand(arg1:string):Promise<utils.Result>;
+export function GetPrompt():Promise<utils.Result>;
 
 export function SaveConnection(arg1:entity.SSHConfig):Promise<utils.Result>;
