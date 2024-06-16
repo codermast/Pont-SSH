@@ -3,8 +3,10 @@
 import {entity} from '../models';
 import {utils} from '../models';
 
-export function CreateConnection(arg1:entity.SSHConfig):Promise<utils.Result>;
-
-export function GetPrompt():Promise<utils.Result>;
+export function GetWebSocketPort():Promise<number>;
 
 export function SaveConnection(arg1:entity.SSHConfig):Promise<utils.Result>;
+
+export function ServerConnection(arg1:entity.SSHConfig):Promise<utils.Result>;
+
+export function TestConnection(arg1:entity.SSHConfig):Promise<utils.Result>;

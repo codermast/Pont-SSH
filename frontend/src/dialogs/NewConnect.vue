@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
 import { entity } from '../../wailsjs/go/models'
-import { CreateConnection, SaveConnection } from '../../wailsjs/go/service/Connection'
+import { TestConnection, SaveConnection } from '../../wailsjs/go/service/Connection'
 import { useMessage } from 'naive-ui'
 import { useDialogStore } from "../stores/dialogStore";
 import { storeToRefs } from "pinia";
@@ -28,12 +28,13 @@ let sshConfig = ref(entity.SSHConfig.createFrom({
 }))
 
 function testConnect() {
-  CreateConnection(sshConfig.value).then((result) => {
+  TestConnection(sshConfig.value).then((result) => {
     // 1. 判断是否成功
     if (result.code == 200) {
       message.success(result.msg);
-
-      router.push({name: "Cmd"});
+      // 关闭模态框
+      // showModal.value = false;
+      // router.push({name: "Cmd"});
     } else {
       message.error(result.msg);
     }
@@ -46,7 +47,7 @@ function saveConnect() {
   SaveConnection(sshConfig.value).then((result) => {
     if (result.code == 200) {
       message.success(result.msg)
-      showModal.value = false;
+      // showModal.value = false;
     } else {
       message.error(result.msg)
     }

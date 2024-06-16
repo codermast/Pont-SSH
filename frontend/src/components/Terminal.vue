@@ -4,8 +4,12 @@ import { Terminal } from 'xterm';
 import { FitAddon } from 'xterm-addon-fit'
 import { useMessage } from 'naive-ui'
 import 'xterm/css/xterm.css';
+import { useRouter } from 'vue-router'
+import { useConfigStore } from "../stores/configStore";
 
+const router = useRouter()
 const message = useMessage();
+const configStore = useConfigStore();
 
 const terminal = new Terminal();
 const terminalContainer = ref(null)
@@ -13,13 +17,20 @@ const terminalContainer = ref(null)
 // 自适应
 const fitAddon = new FitAddon();
 
-let socket = new WebSocket('ws://localhost:8080/ws');
+let socket: WebSocket;
 
 onMounted(() => {
+  // WebSocket Url
+  const url = "ws://localhost:" + configStore.webSocketPort + '/ws';
+  socket = new WebSocket(url);
+  console.log(url)
+
   if (terminalContainer.value) {
-    terminal.open(terminalContainer.value)
     // 绑定自适应
     terminal.loadAddon(fitAddon);
+
+    terminal.open(terminalContainer.value)
+
     // 刷新
     fitAddon.fit();
   }
@@ -79,10 +90,10 @@ terminal.onData(data => {
   } else if (data === '\x03') { // 忽略 Ctrl+C
     // Ignore Ctrl+C
     console.log("ctrl + c");
-  }else if (data === '\x16') { // 忽略 Ctrl+v
+  } else if (data === '\x16') { // 忽略 Ctrl+v
     // Ignore Ctrl+v
     console.log("ctrl + v");
-  }else {
+  } else {
     terminal.write(data);
     buffer.push(data)
     console.log(buffer)
@@ -104,27 +115,21 @@ terminal.onKey(event => {
   }
 });
 
+function back() {
+  router.push({name: 'Home'});
+}
+
 </script>
 
+
 <template>
-  <div class="wrapper">
-    <div class="xterm" ref="terminalContainer"></div>
-  </div>
+  <div class="terminal" ref="terminalContainer"></div>
 </template>
 
 <style scoped>
-.wrapper {
+.terminal {
   overflow: hidden;
-  margin: 0;
-  padding: 0;
-  width: 100vw;
   height: 100vh;
-}
-
-.xterm {
-  margin: 0;
-  padding: 0;
-  height: 100%;
   width: 100%;
 }
 </style>

@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"golang.org/x/crypto/ssh"
 	"log"
+	"net"
 	"net/http"
 	_ "os"
 	"strings"
@@ -27,6 +28,18 @@ var (
 	sshClient *ssh.Client
 )
 
+// 启动端口
+var webSocketPort int
+
+// 将 http 连接升级为 websocket
+var upgrader = websocket.Upgrader{
+	ReadBufferSize:  1024,
+	WriteBufferSize: 1024,
+	CheckOrigin: func(r *http.Request) bool {
+		return true
+	},
+}
+
 // NewConnection 创建一个 Connection 对象
 func NewConnection() *Connection {
 	return &Connection{}
@@ -36,20 +49,38 @@ func NewConnection() *Connection {
 func (c *Connection) Startup(ctx context.Context) {
 	c.ctx = ctx
 
-	// 启动 WebSocket 服务器
-	http.HandleFunc("/ws", handleWebSocket)
-	log.Println("WebSocket server running on :8080")
-	log.Fatal(http.ListenAndServe(":8080", nil))
+	mux := http.NewServeMux()
+	mux.HandleFunc("/ws", handleWebSocket)
+
+	// Create a listener on any available port (port 0)
+	listener, err := net.Listen("tcp", ":0")
+	if err != nil {
+		log.Fatal("Failed to listen:", err)
+	}
+
+	// Output the allocated port
+	port := listener.Addr().(*net.TCPAddr).Port
+	log.Printf("WebSocket server running on port %d\n", port)
+
+	webSocketPort = port
+
+	// Serve the HTTP server using the listener
+	go func() {
+		if err := http.Serve(listener, mux); err != nil {
+			log.Fatal("Failed to serve:", err)
+		}
+	}()
 }
 
-var upgrader = websocket.Upgrader{
-	ReadBufferSize:  1024,
-	WriteBufferSize: 1024,
-	CheckOrigin: func(r *http.Request) bool {
-		return true
-	},
+// Shutdown 销毁方法，用户释放一些资源
+func (c *Connection) Shutdown(ctx context.Context) {
+	err := sshClient.Close()
+	if err != nil {
+		log.Println("Failed to close ssh client:", err)
+	}
 }
 
+// WebSocket 处理器
 func handleWebSocket(w http.ResponseWriter, r *http.Request) {
 	conn, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
@@ -158,12 +189,43 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-// Shutdown 销毁方法，用户释放一些资源
-func (c *Connection) Shutdown(ctx context.Context) {
+// TestConnection 连接测试
+func (c *Connection) TestConnection(sshConfig entity.SSHConfig) utils.Result {
+	server := sshConfig.Server
+	port := sshConfig.Port
+	socket := fmt.Sprintf("%s:%d", server, port)
+	username := sshConfig.Username
+	password := sshConfig.Password
+
+	// 创建 SSH 客户端配置
+	config := &ssh.ClientConfig{
+		User: username,
+		Auth: []ssh.AuthMethod{
+			ssh.Password(password), // 使用密码进行身份验证
+		},
+		HostKeyCallback: ssh.InsecureIgnoreHostKey(), // 在生产环境中应使用更加安全的方法来验证主机密钥
+	}
+
+	// 连接到 SSH 服务器
+	_, err := ssh.Dial("tcp", socket, config)
+	if err != nil {
+		return utils.Error(fmt.Sprintf("Failed to dial: %s", err))
+	}
+
+	return utils.SuccessMsg("连接成功！")
 }
 
-// CreateConnection 创建一个新连接
-func (c *Connection) CreateConnection(sshConfig entity.SSHConfig) utils.Result {
+// SaveConnection 保存新连接
+func (c *Connection) SaveConnection(sshConfig entity.SSHConfig) utils.Result {
+	err := database.SaveSshConnect(sshConfig)
+	if err != nil {
+		return utils.Error("保存失败！")
+	}
+	return utils.SuccessMsg("保存成功！")
+}
+
+// ServerConnection 连接服务器
+func (c *Connection) ServerConnection(sshConfig entity.SSHConfig) utils.Result {
 	server := sshConfig.Server
 	port := sshConfig.Port
 	socket := fmt.Sprintf("%s:%d", server, port)
@@ -190,112 +252,7 @@ func (c *Connection) CreateConnection(sshConfig entity.SSHConfig) utils.Result {
 	return utils.SuccessMsg("连接成功！")
 }
 
-// SaveConnection 保存新连接
-func (c *Connection) SaveConnection(sshConfig entity.SSHConfig) utils.Result {
-	err := database.SaveSshConnect(sshConfig)
-	if err != nil {
-		return utils.Error("保存失败！")
-	}
-	return utils.SuccessMsg("保存成功！")
+// GetWebSocketPort 返回 WebSocketPort
+func (c *Connection) GetWebSocketPort() int {
+	return webSocketPort
 }
-
-// GetPrompt 获取主机头
-func (c *Connection) GetPrompt() utils.Result {
-
-	// 先判断 Client 是否为空
-	if sshClient == nil {
-		log.Printf("Client 为空！")
-		return utils.Error(fmt.Sprintf("Client 为空！"))
-	}
-
-	// 获取 Session 对象
-	session, err := sshClient.NewSession()
-	if err != nil {
-		log.Printf("Failed to create session: %s", err)
-		return utils.Error(fmt.Sprintf("Failed to create session: %s", err))
-	}
-	defer session.Close()
-
-	// 启动之前先拼接主机头信息
-	prompt, err := session.CombinedOutput("pwd_short=\"${PWD/#$HOME/}\"  \n[[ $pwd_short == / ]] && pwd_short='~' || pwd_short=\"~/$pwd_short\"  \nprintf \"%s\" \"$(whoami)@$(hostname):$pwd_short\"")
-	if err != nil {
-		log.Printf("prompt failed: %s", err)
-		return utils.Error(fmt.Sprintf("prompt failed: %s", err))
-	}
-
-	return utils.SuccessData(string(prompt))
-}
-
-//// ExecCommand 执行指令
-//func (c *Connection) ExecCommand(command string) {
-//	// 先判断 Client 是否为空
-//	if sshClient == nil {
-//		log.Printf("Client 为空！")
-//		return
-//	}
-//
-//	// 获取 Session 对象
-//	session, err := sshClient.NewSession()
-//	if err != nil {
-//		log.Printf("Failed to create session: %s", err)
-//		return
-//	}
-//	defer session.Close()
-//
-//	// 请求伪终端
-//	modes := ssh.TerminalModes{
-//		ssh.ECHO:          1,     // 是否回显输入
-//		ssh.TTY_OP_ISPEED: 14400, // 输入速度
-//		ssh.TTY_OP_OSPEED: 14400, // 输出速度
-//	}
-//	err = session.RequestPty("xterm", 80, 40, modes)
-//	if err != nil {
-//		log.Printf("request for pseudo terminal failed: %s", err)
-//		return
-//	}
-//
-//	// 获取标准输出流和标准错误流
-//	stdout, err := session.StdoutPipe()
-//	if err != nil {
-//		log.Printf("Failed to create stdout: %s", err)
-//		return
-//	}
-//	stderr, err := session.StderrPipe()
-//	if err != nil {
-//		log.Printf("Failed to create stderr: %s", err)
-//		return
-//	}
-//
-//	// 启动命令执行
-//	err = session.Shell()
-//	if err != nil {
-//		log.Printf("Failed to start command: %s", err)
-//		handleError(c.ctx, stderr)
-//		return
-//	}
-//
-//	// 使用 bufio.Scanner 按行读取标准输出流
-//	scanner := bufio.NewScanner(stdout)
-//	for scanner.Scan() {
-//		log.Printf("stdout: %s", scanner.Text())
-//		// 触发事件，向前端传递数据
-//		runtime.EventsEmit(c.ctx, "sendResult", scanner.Text())
-//	}
-//
-//	// 等待命令执行完成
-//	err = session.Wait()
-//	if err != nil {
-//		log.Printf("Command execution failed: %v", err)
-//		handleError(c.ctx, stderr)
-//	}
-//}
-//
-//// handleError 用于处理标准错误流
-//func handleError(ctx context.Context, stderr io.Reader) {
-//	scanner := bufio.NewScanner(stderr)
-//	for scanner.Scan() {
-//		log.Printf("stderr: %s", scanner.Text())
-//		// 触发事件，向前端传递数据
-//		runtime.EventsEmit(ctx, "sendResult", scanner.Text())
-//	}
-//}

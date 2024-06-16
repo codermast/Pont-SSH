@@ -1,12 +1,12 @@
 import { createRouter, createWebHistory } from 'vue-router';
-import Home from '../pages/Home.vue';
+import ConnectList from '../components/ConnectList.vue';
 import Terminal from "../components/Terminal.vue";
 
 const routes = [
     {
         path: '/',
-        name: 'Home',
-        component: Home
+        name: 'ConnectList',
+        component: ConnectList
     },
     {
         path: '/cmd',
