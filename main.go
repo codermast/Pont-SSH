@@ -20,15 +20,14 @@ func main() {
 	err := wails.Run(&options.App{
 		Title:     "Pont SSH 连接工具",
 		Width:     1024,
-		Height:    768,
+		Height:    720,
 		MinWidth:  constant.MIN_WINDOW_WIDTH,
 		MinHeight: constant.MIN_WINDOW_HEIGHT,
 		AssetServer: &assetserver.Options{
 			Assets: assets,
 		},
-		BackgroundColour: &options.RGBA{R: 27, G: 38, B: 54, A: 1},
-		OnStartup:        connection.Startup,
-		OnShutdown:       connection.Shutdown,
+		OnStartup:  connection.Startup,
+		OnShutdown: connection.Shutdown,
 		Bind: []interface{}{
 			connection,
 		},

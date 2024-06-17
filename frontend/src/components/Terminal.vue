@@ -45,10 +45,13 @@ onMounted(() => {
 
   socket.onclose = (event) => {
     terminal.write('连接关闭');
+
   };
 
   socket.onerror = (error) => {
     terminal.write('连接异常');
+
+
   };
 });
 

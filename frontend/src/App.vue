@@ -12,7 +12,7 @@ onMounted(() => {
   GetWebSocketPort().then(port => {
     configStore.webSocketPort = port;
 
-    console.log('ws://localhost:' + port + '/ws');
+    // console.log('ws://localhost:' + port + '/ws');
   })
 })
 </script>
@@ -22,11 +22,8 @@ onMounted(() => {
   <div class="container">
     <n-modal-provider>
       <n-message-provider>
-        <n-grid :cols="13">
-          <n-gi :span="1">
-            <Ribbon></Ribbon>
-          </n-gi>
-          <n-gi :span="12" style="height: 100vh;width: 100%">
+        <n-grid :cols="1">
+          <n-gi :span="1" style="height: 100vh;width: 100%">
             <router-view></router-view>
           </n-gi>
         </n-grid>

@@ -41,13 +41,13 @@ function testConnect() {
   })
 }
 
-// 确认点击
+// 保存点击事件
 function saveConnect() {
   // 将 ssh 连接信息存入后端的数据库中
   SaveConnection(sshConfig.value).then((result) => {
     if (result.code == 200) {
       message.success(result.msg)
-      // showModal.value = false;
+      showModal.value = false;
     } else {
       message.error(result.msg)
     }
