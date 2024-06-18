@@ -2,8 +2,10 @@ package database
 
 import (
 	"database/sql"
+	"fmt"
 	"log"
 	_ "modernc.org/sqlite"
+	"os"
 )
 
 // 数据库连接
@@ -11,12 +13,20 @@ var db *sql.DB
 
 // InitDatabase 初始化数据库连接
 func InitDatabase() error {
-	var err error
-	db, err = sql.Open("sqlite", "./pontssh.db")
+	// 打印当前工作目录
+	cwd, err := os.Getwd()
+	if err != nil {
+		log.Fatalf("Failed to get current working directory: %v", err)
+	}
+	fmt.Printf("Current working directory: %s\n", cwd)
+
+	dbOpen, err := sql.Open("sqlite", "./backend/database/pontssh.db")
 
 	if err != nil {
 		return err
 	}
+
+	db = dbOpen
 
 	// Ping 数据库来验证连接
 	if err = db.Ping(); err != nil {

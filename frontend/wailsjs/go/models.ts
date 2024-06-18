@@ -5,7 +5,8 @@ export namespace entity {
 	    port: number;
 	    username: string;
 	    password: string;
-	    key_path: string;
+	    name: string;
+	    edit: boolean;
 	
 	    static createFrom(source: any = {}) {
 	        return new SSHConfig(source);
@@ -17,7 +18,8 @@ export namespace entity {
 	        this.port = source["port"];
 	        this.username = source["username"];
 	        this.password = source["password"];
-	        this.key_path = source["key_path"];
+	        this.name = source["name"];
+	        this.edit = source["edit"];
 	    }
 	}
 

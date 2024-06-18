@@ -1,16 +1,21 @@
 import { createRouter, createWebHistory } from 'vue-router';
-import Home from '../pages/Home.vue';
+import Home from '../components/Home.vue';
 import Terminal from "../components/Terminal.vue";
 import ConnectList from "../components/ConnectList.vue";
 import LogList from "../components/LogList.vue";
 import SystemConfig from "../components/SystemConfig.vue";
-
+import Index from "../components/Index.vue";
 const routes = [
 	{
 		path: '/',
 		name: 'Home',
 		component: Home,
 		children: [
+			{
+				path: '/',
+				name: 'Index',
+				component: Index,
+			},
 			{
 				path: '/connectList',
 				name: 'ConnectList',

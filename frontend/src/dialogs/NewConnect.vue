@@ -6,6 +6,7 @@ import { useMessage } from 'naive-ui'
 import { useDialogStore } from "../stores/dialogStore";
 import { storeToRefs } from "pinia";
 import { useRouter } from "vue-router";
+import ConnectList from "../components/ConnectList.vue";
 
 const router = useRouter()
 

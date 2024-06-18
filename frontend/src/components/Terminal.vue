@@ -6,16 +6,27 @@ import { useMessage } from 'naive-ui'
 import 'xterm/css/xterm.css';
 import { useRouter } from 'vue-router'
 import { useConfigStore } from "../stores/configStore";
+import { WebLinksAddon } from '@xterm/addon-web-links'
+import { BrowserOpenURL } from "../../wailsjs/runtime";
 
 const router = useRouter()
 const message = useMessage();
 const configStore = useConfigStore();
 
-const terminal = new Terminal();
+const terminal = new Terminal(
+    {
+      theme: {
+        background: '#2f3440', // 设置背景颜色
+        foreground: '#ffffff'  // 设置前景（文本）颜色
+      }
+    }
+);
 const terminalContainer = ref(null)
 
 // 自适应
 const fitAddon = new FitAddon();
+// url 可点击
+const webLinksAddon = new WebLinksAddon(handleLink);
 
 let socket: WebSocket;
 
@@ -28,6 +39,8 @@ onMounted(() => {
   if (terminalContainer.value) {
     // 绑定自适应
     terminal.loadAddon(fitAddon);
+    terminal.loadAddon(webLinksAddon);
+
 
     terminal.open(terminalContainer.value)
 
@@ -46,12 +59,16 @@ onMounted(() => {
   socket.onclose = (event) => {
     terminal.write('连接关闭');
 
+    setTimeout(()=>{
+        router.back();
+    },100)
   };
 
   socket.onerror = (error) => {
-    terminal.write('连接异常');
-
-
+    // terminal.write('连接异常');
+    setTimeout(()=>{
+      router.back();
+    },100)
   };
 });
 
@@ -90,10 +107,10 @@ terminal.onData(data => {
   } else if (data === '\u001b[D') {
     message.info("左箭头");
     // 处理左箭头逻辑
-  } else if (data === '\x03') { // 忽略 Ctrl+C
-    // Ignore Ctrl+C
-    console.log("ctrl + c");
-  } else if (data === '\x16') { // 忽略 Ctrl+v
+  } else if (data === '\x03') { //  Ctrl+C
+    console.log("发送中断 Ctrl + C 请求")
+    socket.send("\x03");
+  } else if (data === '\x16') { //  Ctrl+v
     // Ignore Ctrl+v
     console.log("ctrl + v");
   } else {
@@ -103,12 +120,11 @@ terminal.onData(data => {
   }
 })
 
-
 // 键盘按键事件处理
 terminal.onKey(event => {
   // 如果按下的是 Ctrl 键并且同时按下了 C 键，则发送 Ctrl + C 组合键信息
   if (event.domEvent.ctrlKey && event.key === 'c') {
-    socket.send(String.fromCharCode(3));
+
   }
 
   if (event.key === 'v' && event.domEvent.ctrlKey) {
@@ -118,21 +134,35 @@ terminal.onKey(event => {
   }
 });
 
-function back() {
-  router.push({name: 'Home'});
-}
+// 自定义链接处理函数
+function handleLink(event:any, url:string) {
+  // 1. 阻止原本的作用
+  event.preventDefault();
 
+  console.log('Clicked URL:', url);
+
+  // 执行自定义跳转操作
+  BrowserOpenURL(url);
+}
 </script>
 
 
 <template>
-  <div class="terminal" ref="terminalContainer"></div>
+  <div class="terminal-container">
+    <div class="terminal" ref="terminalContainer"></div>
+  </div>
 </template>
 
 <style scoped>
+
+.terminal-container {
+  background-color: #2f3440;
+}
+
 .terminal {
   overflow: hidden;
   height: 100vh;
   width: 100%;
+  margin: 0 5px 10px;
 }
 </style>

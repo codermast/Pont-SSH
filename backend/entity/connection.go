@@ -6,5 +6,6 @@ type SSHConfig struct {
 	Port     int    `json:"port" yaml:"port"`
 	Username string `json:"username" yaml:"username"`
 	Password string `json:"password" yaml:"password"`
-	KeyPath  string `json:"key_path" json:"keyPath"`
+	Name     string `json:"name" json:"name"`
+	Edit     bool   `json:"edit" yaml:"edit"`
 }

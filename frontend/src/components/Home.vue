@@ -1,7 +1,6 @@
 <script setup lang="ts">
 
-import Search from "../components/Search.vue";
-import Sidebar from "../components/Sidebar.vue";
+import Sidebar from "./Sidebar.vue";
 </script>
 
 <template>

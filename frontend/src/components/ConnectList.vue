@@ -1,10 +1,16 @@
 <script setup lang="ts">
-import { h, ref } from 'vue'
+import { onMounted, ref } from 'vue'
 import { Add, ArrowDown, Pencil } from '@vicons/ionicons5'
 import NewConnect from "../dialogs/NewConnect.vue";
 import { useDialogStore } from "../stores/dialogStore";
-import { NIcon } from 'naive-ui'
+import { NIcon, useMessage } from 'naive-ui'
 import Search from "./Search.vue";
+import { GetServerList, ServerConnection } from "../../wailsjs/go/service/Connection";
+
+import { useRouter } from "vue-router";
+
+const router = useRouter()
+const message = useMessage();
 
 const dialogStore = useDialogStore();
 
@@ -13,14 +19,46 @@ function newConnectVisible() {
   dialogStore.newConnectDialogVisible = true;
 }
 
-function renderIcon() {
-  return h(NIcon, null, {
-    default: () => h(Add)
+// 服务器列表
+let serverList = ref()
+
+onMounted(() => {
+  getServerList();
+})
+
+// 获取服务器列表
+function getServerList() {
+  GetServerList().then(result => {
+    console.log(result)
+
+    if (result.code == 200) {
+      message.success(result.msg)
+      serverList.value = result.data
+    } else {
+      message.error(result.msg)
+    }
   })
 }
 
-let edit = ref(false)
+// 连接到服务器
+function connectServer(sshConfig: any) {
+  console.log("sshConfig", sshConfig)
+  console.log("sshConfig.value", sshConfig.value)
+  ServerConnection(sshConfig).then((result) => {
+    // 1. 判断是否成功
+    if (result.code == 200) {
+      message.success(result.msg);
+      router.push({name: "Cmd"});
+    } else {
+      message.error(result.msg);
+    }
+  })
+}
 
+// 编辑服务器连接
+function editServer(sshConfig: any) {
+  // 展示编辑模态框，并将数据进行传递
+}
 </script>
 
 <template>
@@ -37,9 +75,13 @@ let edit = ref(false)
             class="submitButton"
             type="info"
             strong
-            :render-icon="renderIcon"
             @click="newConnectVisible"
         >
+          <template #icon>
+            <n-icon>
+              <add/>
+            </n-icon>
+          </template>
           添加新连接
         </n-button>
 
@@ -65,9 +107,13 @@ let edit = ref(false)
             class="submitButton"
             strong
             type="warning"
-            :render-icon="renderIcon"
             @click="newConnectVisible"
         >
+          <template #icon>
+            <n-icon>
+              <add/>
+            </n-icon>
+          </template>
           添加新连接
         </n-button>
       </n-gi>
@@ -76,9 +122,13 @@ let edit = ref(false)
             class="submitButton"
             strong
             type="error"
-            :render-icon="renderIcon"
             @click="newConnectVisible"
         >
+          <template #icon>
+            <n-icon>
+              <add/>
+            </n-icon>
+          </template>
           添加新连接
         </n-button>
       </n-gi>
@@ -94,16 +144,25 @@ let edit = ref(false)
     >
       <n-scrollbar style="max-height: 80vh">
         <n-grid :cols="2">
-          <n-gi :span="1" v-for="n in 15" :key="n">
+          <n-gi :span="1" v-for="server in serverList">
             <n-card
-                title="卡片"
+                :title="server.name"
                 class="server-card"
                 size="small"
                 hoverable
-                @mouseover="edit = true"
-                @mouseout="edit = false">
-              <p style="line-height: 20px;vertical-align: center">卡片内容
-                <n-button round dashed type="tertiary" style="float: right;" v-show="edit">
+                @mouseover="server.edit = true"
+                @mouseout="server.edit = false"
+                @click="connectServer(server)"
+            >
+              <p style="line-height: 20px;vertical-align: center">{{ server.server + "," + server.username }}
+                <n-button
+                    round
+                    dashed
+                    type="tertiary"
+                    style="float: right;"
+                    v-show="server.edit"
+                    @click="editServer(server)"
+                >
                   <template #icon>
                     <n-icon size="20">
                       <pencil></pencil>

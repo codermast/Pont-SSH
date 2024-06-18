@@ -12,6 +12,9 @@ import (
 //go:embed all:frontend/dist
 var assets embed.FS
 
+//go:embed all:backend/database/pontssh.db
+var database embed.FS
+
 func main() {
 
 	connection := service.NewConnection()

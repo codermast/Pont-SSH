@@ -70,6 +70,12 @@ func (c *Connection) Startup(ctx context.Context) {
 			log.Fatal("Failed to serve:", err)
 		}
 	}()
+
+	// 初始化数据库
+	err = database.InitDatabase()
+	if err != nil {
+		log.Printf("Failed to init database: %s", err)
+	}
 }
 
 // Shutdown 销毁方法，用户释放一些资源
@@ -229,6 +235,7 @@ func (c *Connection) ServerConnection(sshConfig entity.SSHConfig) utils.Result {
 	server := sshConfig.Server
 	port := sshConfig.Port
 	socket := fmt.Sprintf("%s:%d", server, port)
+	log.Println(socket)
 	username := sshConfig.Username
 	password := sshConfig.Password
 
@@ -255,4 +262,15 @@ func (c *Connection) ServerConnection(sshConfig entity.SSHConfig) utils.Result {
 // GetWebSocketPort 返回 WebSocketPort
 func (c *Connection) GetWebSocketPort() int {
 	return webSocketPort
+}
+
+// GetServerList 查询服务器列表
+func (c *Connection) GetServerList() utils.Result {
+	serverList, err := database.GetServerList()
+	if err != nil {
+		log.Println("Query server list error:", err)
+		return utils.Error("查询失败！")
+	}
+
+	return utils.Success(serverList, "查询成功！")
 }
