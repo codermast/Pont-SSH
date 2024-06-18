@@ -134,12 +134,16 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
 	// 输入控制
 	go func() {
 		for {
-			_, message, err := conn.ReadMessage()
-			fmt.Print(string(message))
+			messageType, message, err := conn.ReadMessage()
+
+			fmt.Println(message)
+			fmt.Println(messageType)
+
 			if err != nil {
 				log.Println("websocket read:", err)
 				break
 			}
+
 			if _, err := stdinPipe.Write(append(message, '\n')); err != nil {
 				log.Println("Failed to write to stdin:", err)
 				break

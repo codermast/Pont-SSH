@@ -13,8 +13,8 @@ const router = useRouter()
 const message = useMessage();
 const configStore = useConfigStore();
 
-const terminal = new Terminal(
-    {
+const terminal = new Terminal({
+      fontSize: 16,
       theme: {
         background: '#2f3440', // 设置背景颜色
         foreground: '#ffffff'  // 设置前景（文本）颜色
@@ -41,7 +41,6 @@ onMounted(() => {
     terminal.loadAddon(fitAddon);
     terminal.loadAddon(webLinksAddon);
 
-
     terminal.open(terminalContainer.value)
 
     // 刷新
@@ -58,17 +57,17 @@ onMounted(() => {
 
   socket.onclose = (event) => {
     terminal.write('连接关闭');
-
-    setTimeout(()=>{
-        router.back();
-    },100)
+    //
+    // setTimeout(()=>{
+    //     router.back();
+    // },3000)
   };
 
   socket.onerror = (error) => {
     // terminal.write('连接异常');
-    setTimeout(()=>{
-      router.back();
-    },100)
+    // setTimeout(()=>{
+    //   router.back();
+    // },100)
   };
 });
 
@@ -120,6 +119,7 @@ terminal.onData(data => {
   }
 })
 
+
 // 键盘按键事件处理
 terminal.onKey(event => {
   // 如果按下的是 Ctrl 键并且同时按下了 C 键，则发送 Ctrl + C 组合键信息
@@ -134,8 +134,15 @@ terminal.onKey(event => {
   }
 });
 
+
+// 监听窗口大小变化事件，并调整终端大小
+window.addEventListener('resize', () => {
+
+  fitAddon.fit();
+});
+
 // 自定义链接处理函数
-function handleLink(event:any, url:string) {
+function handleLink(event: any, url: string) {
   // 1. 阻止原本的作用
   event.preventDefault();
 
@@ -149,20 +156,36 @@ function handleLink(event:any, url:string) {
 
 <template>
   <div class="terminal-container">
-    <div class="terminal" ref="terminalContainer"></div>
+    <div class="terminal-box">
+      <div class="terminal" ref="terminalContainer"></div>
+    </div>
   </div>
 </template>
 
 <style scoped>
 
 .terminal-container {
+  height: 100vh;
+  width: 100%;
   background-color: #2f3440;
+}
+
+.terminal-box {
+  position: absolute;
+  top: 30px;
+  left: 10px;
+  right: 10px;
+  bottom: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .terminal {
   overflow: hidden;
-  height: 100vh;
+  flex-grow: 1;
   width: 100%;
-  margin: 0 5px 10px;
+  height: 100%;
 }
+
 </style>
