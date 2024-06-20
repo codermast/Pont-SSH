@@ -146,9 +146,7 @@ function handleLink(event: any, url: string) {
   // 1. 阻止原本的作用
   event.preventDefault();
 
-  console.log('Clicked URL:', url);
-
-  // 执行自定义跳转操作
+  // 2. 执行自定义跳转操作
   BrowserOpenURL(url);
 }
 </script>

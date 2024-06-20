@@ -18,6 +18,10 @@ export function ServerConnection(arg1) {
   return window['go']['service']['Connection']['ServerConnection'](arg1);
 }
 
+export function Startup(arg1) {
+  return window['go']['service']['Connection']['Startup'](arg1);
+}
+
 export function TestConnection(arg1) {
   return window['go']['service']['Connection']['TestConnection'](arg1);
 }

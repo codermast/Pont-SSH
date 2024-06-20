@@ -42,13 +42,11 @@ func GetServerList() ([]entity.SSHConfig, error) {
 
 	for rows.Next() {
 		var server entity.SSHConfig
-		var id string
-		err = rows.Scan(&id, &server.Server, &server.Port, &server.Username, &server.Password, &server.Name)
+		err = rows.Scan(&server.Id, &server.Server, &server.Port, &server.Username, &server.Password, &server.Name)
 		if err != nil {
 			log.Printf("Failed to fetch ssh list")
 			return nil, err
 		}
-		log.Printf("%d", id)
 
 		server.Edit = false
 

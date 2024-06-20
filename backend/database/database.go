@@ -1,11 +1,10 @@
 package database
 
 import (
+	"PontSsh/backend/constant"
 	"database/sql"
-	"fmt"
 	"log"
 	_ "modernc.org/sqlite"
-	"os"
 )
 
 // 数据库连接
@@ -13,14 +12,8 @@ var db *sql.DB
 
 // InitDatabase 初始化数据库连接
 func InitDatabase() error {
-	// 打印当前工作目录
-	cwd, err := os.Getwd()
-	if err != nil {
-		log.Fatalf("Failed to get current working directory: %v", err)
-	}
-	fmt.Printf("Current working directory: %s\n", cwd)
-
-	dbOpen, err := sql.Open("sqlite", "./backend/database/pontssh.db")
+	// 连接数据库
+	dbOpen, err := sql.Open("sqlite", constant.DatabaseFilePath)
 
 	if err != nil {
 		return err

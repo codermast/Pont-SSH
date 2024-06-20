@@ -1,9 +1,7 @@
 <script setup lang="ts">
-import Ribbon from "./components/Ribbon.vue";
-import { EventsOn } from "../wailsjs/runtime";
-import {GetWebSocketPort} from '../wailsjs/go/service/Connection'
+import { GetWebSocketPort } from '../wailsjs/go/service/Connection'
 import { useConfigStore } from "./stores/configStore";
-import { onMounted } from "vue";
+import { onMounted, } from "vue";
 
 const configStore = useConfigStore();
 

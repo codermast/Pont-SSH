@@ -1,15 +1,12 @@
 package utils
 
-import "PontSsh/backend/constant"
+import (
+	"PontSsh/backend/constant"
+	"PontSsh/backend/entity"
+)
 
-type Result struct {
-	Code int         `json:"code"`
-	Data interface{} `json:"data"`
-	Msg  string      `json:"msg"`
-}
-
-func Success(data interface{}, msg string) Result {
-	result := Result{
+func Success(data interface{}, msg string) entity.Result {
+	result := entity.Result{
 		Code: constant.SuccessCode,
 		Data: data,
 		Msg:  msg,
@@ -17,8 +14,8 @@ func Success(data interface{}, msg string) Result {
 	return result
 }
 
-func SuccessData(data interface{}) Result {
-	result := Result{
+func SuccessData(data interface{}) entity.Result {
+	result := entity.Result{
 		Code: constant.SuccessCode,
 		Data: data,
 		Msg:  "success",
@@ -26,8 +23,8 @@ func SuccessData(data interface{}) Result {
 	return result
 }
 
-func SuccessMsg(msg string) Result {
-	result := Result{
+func SuccessMsg(msg string) entity.Result {
+	result := entity.Result{
 		Code: constant.SuccessCode,
 		Data: nil,
 		Msg:  msg,
@@ -35,8 +32,8 @@ func SuccessMsg(msg string) Result {
 	return result
 }
 
-func Error(msg string) Result {
-	result := Result{
+func Error(msg string) entity.Result {
+	result := entity.Result{
 		Code: constant.ErrorCode,
 		Data: nil,
 		Msg:  msg,

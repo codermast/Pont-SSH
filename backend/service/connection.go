@@ -200,7 +200,7 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
 }
 
 // TestConnection 连接测试
-func (c *Connection) TestConnection(sshConfig entity.SSHConfig) utils.Result {
+func (c *Connection) TestConnection(sshConfig entity.SSHConfig) entity.Result {
 	server := sshConfig.Server
 	port := sshConfig.Port
 	socket := fmt.Sprintf("%s:%d", server, port)
@@ -226,7 +226,7 @@ func (c *Connection) TestConnection(sshConfig entity.SSHConfig) utils.Result {
 }
 
 // SaveConnection 保存新连接
-func (c *Connection) SaveConnection(sshConfig entity.SSHConfig) utils.Result {
+func (c *Connection) SaveConnection(sshConfig entity.SSHConfig) entity.Result {
 	err := database.SaveSshConnect(sshConfig)
 	if err != nil {
 		return utils.Error("保存失败！")
@@ -235,7 +235,7 @@ func (c *Connection) SaveConnection(sshConfig entity.SSHConfig) utils.Result {
 }
 
 // ServerConnection 连接服务器
-func (c *Connection) ServerConnection(sshConfig entity.SSHConfig) utils.Result {
+func (c *Connection) ServerConnection(sshConfig entity.SSHConfig) entity.Result {
 	server := sshConfig.Server
 	port := sshConfig.Port
 	socket := fmt.Sprintf("%s:%d", server, port)
@@ -269,7 +269,7 @@ func (c *Connection) GetWebSocketPort() int {
 }
 
 // GetServerList 查询服务器列表
-func (c *Connection) GetServerList() utils.Result {
+func (c *Connection) GetServerList() entity.Result {
 	serverList, err := database.GetServerList()
 	if err != nil {
 		log.Println("Query server list error:", err)

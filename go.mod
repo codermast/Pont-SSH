@@ -7,6 +7,7 @@ toolchain go1.22.2
 require (
 	github.com/google/uuid v1.6.0
 	github.com/gorilla/websocket v1.5.3
+	github.com/vrischmann/userdir v0.0.0-20151206171402-20f291cebd68
 	github.com/wailsapp/wails/v2 v2.9.1
 	golang.org/x/crypto v0.23.0
 	modernc.org/sqlite v1.30.1
