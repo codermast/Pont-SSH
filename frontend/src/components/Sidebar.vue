@@ -43,6 +43,11 @@ function contributeClick() {
 function githubClick() {
   BrowserOpenURL("https://www.github.com/CoderMast/Pont-SSH");
 }
+
+// 跳转到首页
+function backToIndex() {
+  router.push({name: 'Index'});
+}
 </script>
 
 <template>
@@ -54,7 +59,9 @@ function githubClick() {
           <n-image preview-disabled
                    src="https://www.codermast.com/logo.png"
                    width="160vw"
-                   alt="Logo"/>
+                   alt="Logo"
+                   @click="backToIndex"
+          />
         </n-gi>
       </n-grid>
 
@@ -77,7 +84,7 @@ function githubClick() {
               <n-thing title="日志管理" content-style="margin-top: 10px;">
                 <template #description>
                   <n-space size="small" style="margin-top: 4px">
-                    管理你的 SSH 连接
+                    连接日志管理
                   </n-space>
                 </template>
               </n-thing>
@@ -86,7 +93,7 @@ function githubClick() {
               <n-thing title="系统设置" content-style="margin-top: 10px;">
                 <template #description>
                   <n-space size="small" style="margin-top: 4px">
-                    管理你的 SSH 连接
+                    自定义系统设置
                   </n-space>
                 </template>
               </n-thing>
@@ -140,7 +147,7 @@ function githubClick() {
 <style scoped>
 
 .sidebar {
-  width: 230px;
+  width: 25vw;
   position: fixed; /* 固定定位 */
   left: 0; /* 紧贴左侧 */
   bottom: 0; /* 紧贴底部 */
