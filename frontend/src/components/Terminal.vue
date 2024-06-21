@@ -8,10 +8,13 @@ import { useRouter } from 'vue-router'
 import { useConfigStore } from "../stores/configStore";
 import { WebLinksAddon } from '@xterm/addon-web-links'
 import { BrowserOpenURL } from "../../wailsjs/runtime";
+import ErrorConnect from "../dialogs/ErrorConnect.vue";
+import { useDialogStore } from "../stores/dialogStore";
 
 const router = useRouter()
 const message = useMessage();
 const configStore = useConfigStore();
+const dialogStore = useDialogStore();
 
 const terminal = new Terminal({
       fontSize: 16,
@@ -57,17 +60,12 @@ onMounted(() => {
 
   socket.onclose = (event) => {
     terminal.write('连接关闭');
-    //
-    // setTimeout(()=>{
-    //     router.back();
-    // },3000)
+    dialogStore.errorConnectDialogVisible = true;
   };
 
   socket.onerror = (error) => {
-    // terminal.write('连接异常');
-    // setTimeout(()=>{
-    //   router.back();
-    // },100)
+    terminal.write('连接异常');
+    dialogStore.errorConnectDialogVisible = true;
   };
 });
 
@@ -158,6 +156,8 @@ function handleLink(event: any, url: string) {
       <div class="terminal" ref="terminalContainer"></div>
     </div>
   </div>
+  <ErrorConnect></ErrorConnect>
+
 </template>
 
 <style scoped>

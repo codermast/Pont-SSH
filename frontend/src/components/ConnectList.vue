@@ -32,7 +32,6 @@ function getServerList() {
     console.log(result)
 
     if (result.code == 200) {
-      message.success(result.msg)
       serverList.value = result.data
     } else {
       message.error(result.msg)

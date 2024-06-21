@@ -9,5 +9,8 @@ export const useDialogStore = defineStore('dialogStore', () => {
 	// 关于作者弹窗
 	let aboutAuthorDialogVisible = ref(false);
 
-	return {newConnectDialogVisible, aboutAuthorDialogVisible}
+	// 连接异常弹出框
+	let errorConnectDialogVisible = ref(false);
+
+	return {newConnectDialogVisible, aboutAuthorDialogVisible,errorConnectDialogVisible}
 })
