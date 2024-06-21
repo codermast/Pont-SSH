@@ -8,6 +8,7 @@ import Search from "./Search.vue";
 import { GetServerList, ServerConnection } from "../../wailsjs/go/service/Connection";
 
 import { useRouter } from "vue-router";
+import EditConnect from "../dialogs/EditConnect.vue";
 
 const router = useRouter()
 const message = useMessage();
@@ -57,6 +58,7 @@ function connectServer(sshConfig: any) {
 // 编辑服务器连接
 function editServer(sshConfig: any) {
   // 展示编辑模态框，并将数据进行传递
+  dialogStore.editConnectDialogVisible = true;
 }
 </script>
 
@@ -160,7 +162,7 @@ function editServer(sshConfig: any) {
                     type="tertiary"
                     style="float: right;"
                     v-show="server.edit"
-                    @click="editServer(server)"
+                    @click.stop="editServer(server)"
                 >
                   <template #icon>
                     <n-icon size="20">
@@ -179,8 +181,14 @@ function editServer(sshConfig: any) {
     </n-config-provider>
   </div>
 
-  <!-- 创建连接弹窗 -->
+  <!-- 创建连接模态框 -->
   <NewConnect></NewConnect>
+
+  <!-- 编辑连接模态框 -->
+  <EditConnect
+  >
+  </EditConnect>
+
 </template>
 
 <style scoped>

@@ -10,13 +10,7 @@ import { useRouter } from "vue-router";
 const router = useRouter()
 
 const dialogStore = useDialogStore()
-let {newConnectDialogVisible} = storeToRefs(dialogStore)
 
-let showModal = ref(newConnectDialogVisible)
-
-watch(newConnectDialogVisible, (newValue) => {
-  showModal.value = newValue
-})
 
 const message = useMessage();
 const sshConfig = ref<entity.SSHConfig>({
@@ -49,7 +43,7 @@ function saveConnect() {
   SaveConnection(sshConfig.value).then((result) => {
     if (result.code == 200) {
       message.success(result.msg)
-      showModal.value = false;
+      dialogStore.newConnectDialogVisible = false;
     } else {
       message.error(result.msg)
     }
@@ -58,22 +52,17 @@ function saveConnect() {
 
 // 取消点击
 function cancelClick() {
-  showModal.value = false;
+  dialogStore.newConnectDialogVisible = false;
 }
 </script>
 
 <template>
-  <n-modal v-model:show="showModal"
+  <n-modal v-model:show="dialogStore.newConnectDialogVisible"
            transform-origin="center"
            :mask-closable="false"
            class="main"
   >
     <n-card title="新建连接">
-
-      <template #header>
-        表头
-      </template>
-
       <n-tabs
           type="line"
           animated

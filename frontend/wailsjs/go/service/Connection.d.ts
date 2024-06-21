@@ -14,3 +14,5 @@ export function ServerConnection(arg1:entity.SSHConfig):Promise<entity.Result>;
 export function Startup(arg1:context.Context):Promise<void>;
 
 export function TestConnection(arg1:entity.SSHConfig):Promise<entity.Result>;
+
+export function UpdateConnection(arg1:entity.SSHConfig):Promise<entity.Result>;

@@ -25,3 +25,7 @@ export function Startup(arg1) {
 export function TestConnection(arg1) {
   return window['go']['service']['Connection']['TestConnection'](arg1);
 }
+
+export function UpdateConnection(arg1) {
+  return window['go']['service']['Connection']['UpdateConnection'](arg1);
+}

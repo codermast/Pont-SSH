@@ -278,3 +278,13 @@ func (c *Connection) GetServerList() entity.Result {
 
 	return utils.Success(serverList, "查询成功！")
 }
+
+// UpdateConnection 更新连接
+func (c *Connection) UpdateConnection(sshConfig entity.SSHConfig) entity.Result {
+	err := database.UpdateConnection(sshConfig)
+
+	if err != nil {
+		return utils.Error("更新失败")
+	}
+	return utils.SuccessMsg("更新成功")
+}
