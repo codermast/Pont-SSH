@@ -18,15 +18,17 @@ onMounted(() => {
 <template>
 
   <div class="container">
-    <n-modal-provider>
-      <n-message-provider>
-        <n-grid :cols="1">
-          <n-gi :span="1" style="height: 100vh;width: 100%">
-            <router-view></router-view>
-          </n-gi>
-        </n-grid>
-      </n-message-provider>
-    </n-modal-provider>
+    <n-dialog-provider>
+      <n-modal-provider>
+        <n-message-provider>
+          <n-grid :cols="1">
+            <n-gi :span="1" style="height: 100vh;width: 100%">
+              <router-view></router-view>
+            </n-gi>
+          </n-grid>
+        </n-message-provider>
+      </n-modal-provider>
+    </n-dialog-provider>
   </div>
 
 

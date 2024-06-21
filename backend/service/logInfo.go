@@ -35,3 +35,22 @@ func (l *LogInfo) SaveLogInfo(logInfo entity.LogInfo) entity.Result {
 
 	return utils.SuccessData(logInfo)
 }
+
+// SearchLogInfo 搜索日志信息
+func (l *LogInfo) SearchLogInfo(serviceId string, keyword string) entity.Result {
+	logInfos := database.SearchLogInfo(serviceId, keyword)
+
+	return utils.SuccessData(logInfos)
+}
+
+// ClearLogInfo 清空日志
+func (l *LogInfo) ClearLogInfo() entity.Result {
+	err := database.ClearLogInfo()
+
+	if err != nil {
+		log.Printf("Clear LogInfo Error ：%v", err)
+		return utils.Error("Clear LogInfo Error")
+	}
+
+	return utils.SuccessMsg("Clear LogInfo Success")
+}

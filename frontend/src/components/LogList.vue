@@ -3,11 +3,12 @@ import { onMounted, ref } from 'vue'
 import { FlashOutline, Reload } from "@vicons/ionicons5";
 import DeleteIcon from "../icons/DeleteIcon.vue";
 import { GetServerList } from "../../wailsjs/go/service/Connection";
-import { GetLogInfoList } from "../../wailsjs/go/service/LogInfo";
-import { useMessage } from 'naive-ui'
+import { ClearLogInfo, SearchLogInfo } from "../../wailsjs/go/service/LogInfo";
+import { useDialog, useMessage } from 'naive-ui'
 import { entity } from '../../wailsjs/go/models';
 
 const message = useMessage();
+const dialog = useDialog();
 
 let options = [
   {
@@ -18,7 +19,7 @@ let options = [
 
 let all = ref("all")
 
-let keyword = ref(null)
+let keyword = ref<string | null>(null)
 
 let logColumns = [
   {
@@ -39,9 +40,7 @@ let logColumns = [
   }
 ]
 
-let logData = ref<entity.LogInfo[]>([
-
-])
+let logData = ref<entity.LogInfo[]>([])
 
 onMounted(() => {
   // 获取服务器列表
@@ -62,17 +61,16 @@ onMounted(() => {
   })
 
   // 查询所有服务器日志
-  getLogInfoList(options[0].value)
+  searchLogInfo(options[0].value, "")
 })
 
-// 查询指定服务器日志
-function getLogInfoList(serverId: string) {
+// 搜索指定日志
+function searchLogInfo(serverId: string, keyword: string) {
   // 1. 先进行数据初始化
   logData.value = []
 
   // 2. 然后添加数据
-  GetLogInfoList(serverId).then((result) => {
-    console.log(result)
+  SearchLogInfo(serverId, keyword).then((result) => {
     if (result.code == 200) {
       let data = result.data
 
@@ -89,6 +87,35 @@ function getLogInfoList(serverId: string) {
     console.log("logData", logData)
   })
 }
+
+// 重新加载
+function reloadLogInfo() {
+  searchLogInfo(options[0].value, "")
+  message.success("加载成功")
+}
+
+// 清空日志
+function deleteLogInfo(serverId: string) {
+  dialog.warning({
+    title: '警告',
+    content: '是否清空所有日志？',
+    positiveText: '确定',
+    negativeText: '取消',
+    onPositiveClick: () => {
+      ClearLogInfo().then((result) => {
+        if (result.code == 200) {
+          message.success(result.msg)
+        } else {
+          message.error(result.msg)
+        }
+      })
+    },
+    onNegativeClick: () => {
+      message.warning("清空取消")
+    }
+  })
+}
+
 </script>
 
 <template>
@@ -105,37 +132,37 @@ function getLogInfoList(serverId: string) {
                 v-model:value="all"
                 :options="options"
                 style="width: 80%"
-                @change="getLogInfoList"
+                @change="searchLogInfo($event, '')"
             />
           </n-gi>
           <n-gi :span="3">
-            <div style="display: flex;flex-direction: column">
-              <span>关键字</span>
-              <div>
-                <n-input v-model:value="keyword"
-                         type="text"
-                         placeholder="搜索"
-                         style="width: 70%">
-                  <template #prefix>
-                    <n-icon :component="FlashOutline"/>
-                  </template>
-                </n-input>
-                <n-button style="margin-left: 10px">
-                  <template #icon>
-                    <n-icon>
-                      <reload/>
-                    </n-icon>
-                  </template>
-                </n-button>
+            <span>关键字</span>
+            <div>
+              <n-input v-model:value="keyword"
+                       type="text"
+                       placeholder="搜索"
+                       style="width: 70%"
+                       @change="searchLogInfo"
+              >
+                <template #prefix>
+                  <n-icon :component="FlashOutline"/>
+                </template>
+              </n-input>
+              <n-button style="margin-left: 10px" @click="reloadLogInfo">
+                <template #icon>
+                  <n-icon>
+                    <reload/>
+                  </n-icon>
+                </template>
+              </n-button>
 
-                <n-button style="margin-left: 10px">
-                  <template #icon>
-                    <n-icon>
-                      <delete-icon/>
-                    </n-icon>
-                  </template>
-                </n-button>
-              </div>
+              <n-button style="margin-left: 10px" @click="deleteLogInfo">
+                <template #icon>
+                  <n-icon>
+                    <delete-icon/>
+                  </n-icon>
+                </template>
+              </n-button>
             </div>
           </n-gi>
         </n-grid>

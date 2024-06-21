@@ -56,3 +56,55 @@ func SaveLogInfo(logInfo entity.LogInfo) error {
 
 	return err
 }
+
+// SearchLogInfo 搜索日志信息
+func SearchLogInfo(serverId string, keyword string) []entity.LogInfo {
+	sql := "SELECT * FROM logs WHERE logs.command LIKE '%" + keyword + "%'"
+
+	// 查询指定服务器日志，则拼接条件
+	if serverId != "all" {
+		sql += " AND server_id = ?"
+	}
+
+	log.Println("sql:", sql)
+	log.Println("serverId:", serverId)
+
+	rows, err := Query(sql, serverId)
+
+	if err != nil {
+		log.Printf("日志查询SQL执行异常：%v", err)
+	}
+
+	// 日志数据
+	logInfos := make([]entity.LogInfo, 0)
+
+	for rows.Next() {
+		var logInfo entity.LogInfo
+		err := rows.Scan(&logInfo.Id, &logInfo.ServerId, &logInfo.Time, &logInfo.Command, &logInfo.ExecDate /* 指定字段 */)
+		if err != nil {
+			log.Printf("扫描行出错：%v", err)
+			// 处理错误，例如跳过或者返回错误信息
+			continue
+		}
+		logInfos = append(logInfos, logInfo)
+	}
+
+	rowsJson, err := json.Marshal(logInfos)
+
+	if err != nil {
+		log.Printf("JSON 转换异常：%s", err)
+	}
+
+	log.Printf("Log日志数据%s", string(rowsJson))
+
+	return logInfos
+}
+
+// ClearLogInfo 清空日志
+func ClearLogInfo() error {
+	sql := "DELETE FROM logs"
+
+	err := Execute(sql)
+
+	return err
+}
