@@ -95,7 +95,7 @@ function reloadLogInfo() {
 }
 
 // 清空日志
-function deleteLogInfo(serverId: string) {
+function deleteLogInfo() {
   dialog.warning({
     title: '警告',
     content: '是否清空所有日志？',
