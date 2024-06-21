@@ -20,9 +20,9 @@ func NewLogInfo() *LogInfo {
 
 // GetLogInfoList 获取日志信息
 func (l *LogInfo) GetLogInfoList(serverId string) entity.Result {
-	logs := database.GetLogInfoList(serverId)
+	logInfos := database.GetLogInfoList(serverId)
 
-	return utils.SuccessData(logs)
+	return utils.SuccessData(logInfos)
 }
 
 // SaveLogInfo 添加日志信息

@@ -22,23 +22,26 @@ let keyword = ref(null)
 
 let logColumns = [
   {
-    title: '执行时间',
-    key: 'execDate'
-  },
-  {
     title: '服务器',
-    key: 'server'
+    key: 'server_id'
   },
   {
     title: '执行命令',
     key: 'command'
-  }, {
+  },
+  {
+    title: '执行时间',
+    key: 'exec_date'
+  },
+  {
     title: '执行结果',
-    key: 'result'
+    key: 'time'
   }
 ]
 
-let logData: entity.LogInfo[] = []
+let logData = ref<entity.LogInfo[]>([
+
+])
 
 onMounted(() => {
   // 获取服务器列表
@@ -59,26 +62,31 @@ onMounted(() => {
   })
 
   // 查询所有服务器日志
-  GetLogInfoList(options[0].value).then(result => {
-    console.log(result)
-  })
+  getLogInfoList(options[0].value)
 })
 
 // 查询指定服务器日志
 function getLogInfoList(serverId: string) {
+  // 1. 先进行数据初始化
+  logData.value = []
+
+  // 2. 然后添加数据
   GetLogInfoList(serverId).then((result) => {
+    console.log(result)
     if (result.code == 200) {
       let data = result.data
 
       if (data != null) {
         // 这里拼接日志信息
         for (let i = 0; i < data.length; i ++) {
-          logData.push(data[i])
+          logData.value.push(data[i])
         }
       }
     } else {
       message.error("获取日志失败！");
     }
+
+    console.log("logData", logData)
   })
 }
 </script>

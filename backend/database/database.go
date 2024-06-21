@@ -68,8 +68,8 @@ func CloseDatabase() error {
 }
 
 // Query 执行查询语句
-func Query(query string) (*sql.Rows, error) {
-	rows, err := db.Query(query)
+func Query(query string, args ...interface{}) (*sql.Rows, error) {
+	rows, err := db.Query(query, args...)
 
 	return rows, err
 }

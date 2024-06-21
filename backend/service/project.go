@@ -30,7 +30,7 @@ func (p *Project) Startup(ctx context.Context) {
 	// 0. 判断是否需要初始化
 	_, err := os.Stat(filePath)
 
-	if (err != nil && os.IsNotExist(err)) || (err == nil && !os.IsNotExist(err)) {
+	if os.IsNotExist(err) {
 		log.Println("数据库文件不存在，则需要进行初始化")
 
 		// 1. 创建数据库文件
@@ -69,6 +69,8 @@ func (p *Project) Startup(ctx context.Context) {
 		} else {
 			log.Println("数据库初始化完毕！")
 		}
+	} else {
+		log.Println("数据库已经存在，则不必初始化！")
 	}
 
 }

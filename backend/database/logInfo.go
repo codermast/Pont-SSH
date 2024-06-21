@@ -15,13 +15,29 @@ func GetLogInfoList(serverId string) []entity.LogInfo {
 		sql += " where server_id = ?"
 	}
 
-	rows, err := Query(sql)
+	log.Println("sql:", sql)
+
+	rows, err := Query(sql, serverId)
 
 	if err != nil {
 		log.Printf("日志查询SQL执行异常：%v", err)
 	}
 
-	rowsJson, err := json.Marshal(rows)
+	// 日志数据
+	logInfos := make([]entity.LogInfo, 0)
+
+	for rows.Next() {
+		var logInfo entity.LogInfo
+		err := rows.Scan(&logInfo.Id, &logInfo.ServerId, &logInfo.Time, &logInfo.Command, &logInfo.ExecDate /* 指定字段 */)
+		if err != nil {
+			log.Printf("扫描行出错：%v", err)
+			// 处理错误，例如跳过或者返回错误信息
+			continue
+		}
+		logInfos = append(logInfos, logInfo)
+	}
+
+	rowsJson, err := json.Marshal(logInfos)
 
 	if err != nil {
 		log.Printf("JSON 转换异常：%s", err)
@@ -29,7 +45,7 @@ func GetLogInfoList(serverId string) []entity.LogInfo {
 
 	log.Printf("Log日志数据%s", string(rowsJson))
 
-	return nil
+	return logInfos
 }
 
 // SaveLogInfo 添加日志信息
