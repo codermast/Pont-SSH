@@ -69,8 +69,8 @@ func main() {
 		Windows:                          nil,
 		// Mac 配置
 		Mac: &mac.Options{
-			TitleBar:   mac.TitleBarHiddenInset(),
-			Appearance: mac.NSAppearanceNameDarkAqua,
+			TitleBar:   mac.TitleBarDefault(),
+			Appearance: mac.DefaultAppearance,
 			About: &mac.AboutInfo{
 				Title:   "About",
 				Message: "© 2021 Me",

@@ -7,6 +7,7 @@ import Sidebar from "./Sidebar.vue";
   <div class="content-container">
     <n-grid :cols="4">
       <n-gi :span="1">
+
         <Sidebar></Sidebar>
       </n-gi>
       <n-gi :span="3">

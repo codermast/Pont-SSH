@@ -153,7 +153,7 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
 
 	// 输出控制
 	go func() {
-		buf := make([]byte, 1024)
+		buf := make([]byte, 10240)
 		for {
 			n, err := stdoutPipe.Read(buf)
 			if err != nil {

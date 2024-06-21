@@ -3,8 +3,11 @@ import { defineStore } from 'pinia';
 import { ref } from 'vue';
 
 export const useDialogStore = defineStore('dialogStore', () => {
-    // 创建连接弹窗
-    let newConnectDialogVisible = ref(false);
+	// 创建连接弹窗
+	let newConnectDialogVisible = ref(false);
 
-    return { newConnectDialogVisible }
+	// 关于作者弹窗
+	let aboutAuthorDialogVisible = ref(false);
+
+	return {newConnectDialogVisible, aboutAuthorDialogVisible}
 })
