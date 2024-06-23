@@ -22,7 +22,7 @@ onMounted(() => {
       <n-modal-provider>
         <n-message-provider>
           <n-grid :cols="1">
-            <n-gi :span="1" style="height: 100vh;width: 100%">
+            <n-gi :span="1" >
               <router-view></router-view>
             </n-gi>
           </n-grid>

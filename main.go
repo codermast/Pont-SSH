@@ -23,70 +23,34 @@ func main() {
 	logInfo := service.NewLogInfo()
 
 	app := &options.App{
-		Title:             "Pont SSH 连接工具",
-		Width:             1024,
-		Height:            720,
-		DisableResize:     false,
-		Fullscreen:        false,
-		Frameless:         false,
-		MinWidth:          constant.MIN_WINDOW_WIDTH,
-		MinHeight:         constant.MIN_WINDOW_HEIGHT,
-		MaxWidth:          0,
-		MaxHeight:         0,
-		StartHidden:       false,
-		HideWindowOnClose: false,
-		AlwaysOnTop:       false,
-		BackgroundColour:  nil,
-		Assets:            nil,
-		AssetsHandler:     nil,
+		Title:     "Pont SSH 连接工具",
+		Width:     1024,
+		Height:    720,
+		MinWidth:  constant.MIN_WINDOW_WIDTH,
+		MinHeight: constant.MIN_WINDOW_HEIGHT,
 		AssetServer: &assetserver.Options{
 			Assets: assets,
 		},
-		Menu:               nil,
-		Logger:             nil,
-		LogLevel:           0,
-		LogLevelProduction: 0,
 		OnStartup: func(ctx context.Context) {
 			project.Startup(ctx)
 			connection.Startup(ctx)
 		},
-		OnDomReady:    nil,
-		OnShutdown:    connection.Shutdown,
-		OnBeforeClose: nil,
+		OnShutdown: connection.Shutdown,
 		Bind: []interface{}{
 			project,
 			connection,
 			logInfo,
 		},
-		EnumBind:                         nil,
-		WindowStartState:                 0,
-		ErrorFormatter:                   nil,
-		CSSDragProperty:                  "",
-		CSSDragValue:                     "",
-		EnableDefaultContextMenu:         false,
-		EnableFraudulentWebsiteDetection: false,
-		SingleInstanceLock:               nil,
-		Windows:                          nil,
 		// Mac 配置
 		Mac: &mac.Options{
 			TitleBar:   mac.TitleBarDefault(),
 			Appearance: mac.DefaultAppearance,
 			About: &mac.AboutInfo{
 				Title:   "About",
-				Message: "© 2021 Me",
+				Message: "© 2024 CoderMast",
 				Icon:    icon,
 			},
-
-			Preferences: &mac.Preferences{
-				TabFocusesLinks:        mac.Enabled,
-				TextInteractionEnabled: mac.Disabled,
-				FullscreenEnabled:      mac.Disabled,
-			},
 		},
-		Linux:        nil,
-		Experimental: nil,
-		Debug:        options.Debug{},
-		DragAndDrop:  nil,
 	}
 
 	// Create application with options
