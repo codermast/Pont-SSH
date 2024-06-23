@@ -1,27 +1,30 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue'
+import { ref } from 'vue'
 import { entity } from '../../wailsjs/go/models'
 import { SaveConnection, TestConnection } from '../../wailsjs/go/service/Connection'
 import { useMessage } from 'naive-ui'
 import { useDialogStore } from "../stores/dialogStore";
-import { storeToRefs } from "pinia";
 import { useRouter } from "vue-router";
 
 const router = useRouter()
 
 const dialogStore = useDialogStore()
 
+const props = defineProps({
+  sshConnectConfig: entity.SSHConfig
+})
 
 const message = useMessage();
-const sshConfig = ref<entity.SSHConfig>({
-  id: "123",
-  server: "10.211.55.17",
-  port: 22,
-  username: "codermast",
-  password: "dongpeng@123.",
-  name: "string",
-  edit: false,
-});
+// const sshConfig = ref<entity.SSHConfig>({
+//   id: "123",
+//   server: "10.211.55.17",
+//   port: 22,
+//   username: "codermast",
+//   password: "dongpeng@123.",
+//   name: "string",
+//   edit: false,
+// });
+const sshConfig = ref<entity.SSHConfig>(<entity.SSHConfig>props.sshConnectConfig);
 
 function testConnect() {
   TestConnection(sshConfig.value).then((result) => {
