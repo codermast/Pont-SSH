@@ -62,13 +62,17 @@ function editServer() {
   dialogStore.editConnectDialogVisible = true;
 }
 
+// 更新搜索结果
+function changeServerList(sshConfig: entity.SSHConfig[]) {
+  serverList.value = sshConfig;
+}
 </script>
 
 <template>
   <div class="server-list">
     <n-grid :cols="1">
       <n-gi :span="1">
-        <Search></Search>
+        <Search :change-server-list="changeServerList"></Search>
       </n-gi>
     </n-grid>
 
