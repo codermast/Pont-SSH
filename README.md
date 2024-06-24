@@ -1,6 +1,7 @@
 # Pont SSH 连接工具
 
-![首页](screenshot/home.png)
+![连接管理](screenshot/connection.png)
+![日志管理](screenshot/loginfo.png)
 
 ## 项目介绍
 
