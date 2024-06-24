@@ -14,6 +14,10 @@ export function SaveConnection(arg1) {
   return window['go']['service']['Connection']['SaveConnection'](arg1);
 }
 
+export function SearchConnection(arg1) {
+  return window['go']['service']['Connection']['SearchConnection'](arg1);
+}
+
 export function ServerConnection(arg1) {
   return window['go']['service']['Connection']['ServerConnection'](arg1);
 }

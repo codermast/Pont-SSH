@@ -4,36 +4,29 @@ import { entity } from '../../wailsjs/go/models'
 import { SaveConnection, TestConnection } from '../../wailsjs/go/service/Connection'
 import { useMessage } from 'naive-ui'
 import { useDialogStore } from "../stores/dialogStore";
-import { useRouter } from "vue-router";
-
-const router = useRouter()
 
 const dialogStore = useDialogStore()
 
-const props = defineProps({
-  sshConnectConfig: entity.SSHConfig
-})
-
 const message = useMessage();
-// const sshConfig = ref<entity.SSHConfig>({
-//   id: "123",
-//   server: "10.211.55.17",
-//   port: 22,
-//   username: "codermast",
-//   password: "dongpeng@123.",
-//   name: "string",
-//   edit: false,
-// });
-const sshConfig = ref<entity.SSHConfig>(<entity.SSHConfig>props.sshConnectConfig);
+
+const sshConfig = ref<entity.SSHConfig>(
+    {
+      id: "1",
+      server: "",
+      port: 22,
+      username: "",
+      password: "",
+      name: "",
+      edit: false,
+    }
+
+);
 
 function testConnect() {
   TestConnection(sshConfig.value).then((result) => {
     // 1. 判断是否成功
     if (result.code == 200) {
       message.success(result.msg);
-      // 关闭模态框
-      // showModal.value = false;
-      // router.push({name: "Cmd"});
     } else {
       message.error(result.msg);
     }
@@ -79,7 +72,9 @@ function cancelClick() {
               label-placement="left"
               style="max-width: 600px;"
           >
-
+            <n-form-item label="名称">
+              <n-input v-model:value="sshConfig.name" placeholder="输入服务器名称"></n-input>
+            </n-form-item>
             <n-form-item label="服务器IP">
               <n-input v-model:value="sshConfig.server" placeholder="输入服务器IP"/>
             </n-form-item>

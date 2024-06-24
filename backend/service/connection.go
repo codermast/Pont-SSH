@@ -288,3 +288,13 @@ func (c *Connection) UpdateConnection(sshConfig entity.SSHConfig) entity.Result 
 	}
 	return utils.SuccessMsg("更新成功")
 }
+
+// SearchConnection 搜索服务器列表
+func (c *Connection) SearchConnection(keyword string) entity.Result {
+	data, err := database.SearchConnection(keyword)
+	if err != nil {
+		return utils.Error("查询失败！")
+	}
+
+	return utils.SuccessData(data)
+}

@@ -3,6 +3,7 @@ package service
 import (
 	"PontSsh/assets"
 	"PontSsh/backend/constant"
+	"PontSsh/backend/database"
 	"context"
 	"database/sql"
 	_ "embed"
@@ -77,5 +78,9 @@ func (p *Project) Startup(ctx context.Context) {
 
 // Shutdown 销毁方法
 func (p *Project) Shutdown() {
+	err := database.CloseDatabase()
 
+	if err != nil {
+		log.Println("关闭数据库连接失败！")
+	}
 }

@@ -6,22 +6,14 @@ import { useMessage } from 'naive-ui'
 import { useDialogStore } from "../stores/dialogStore";
 
 // 使用 defineProps 接收 props
-// const ssh = defineProps<entity.SSHConfig>();
+const props = defineProps({
+  sshConnectConfig: entity.SSHConfig
+})
 
 const dialogStore = useDialogStore()
 
 const message = useMessage();
-const sshConfig = ref<entity.SSHConfig>(
-    {
-      id: "123",
-      server: "10.211.55.17",
-      port: 22,
-      username: "codermast",
-      password: "dongpeng@123.",
-      name: "string",
-      edit: false,
-    }
-);
+const sshConfig = ref<entity.SSHConfig>(<entity.SSHConfig>props.sshConnectConfig);
 
 function testConnect() {
   TestConnection(sshConfig.value).then((result) => {
@@ -77,7 +69,9 @@ function cancelClick() {
               label-placement="left"
               style="max-width: 600px;"
           >
-
+            <n-form-item label="名称">
+              <n-input v-model:value="sshConfig.name" placeholder="输入服务器名称"></n-input>
+            </n-form-item>
             <n-form-item label="服务器IP">
               <n-input v-model:value="sshConfig.server" placeholder="输入服务器IP"/>
             </n-form-item>
