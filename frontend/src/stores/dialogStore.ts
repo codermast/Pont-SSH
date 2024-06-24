@@ -9,7 +9,6 @@ export const useDialogStore = defineStore('dialogStore', () => {
 	// 编辑连接弹窗
 	let editConnectDialogVisible = ref(false);
 
-
 	// 关于作者弹窗
 	let aboutAuthorDialogVisible = ref(false);
 

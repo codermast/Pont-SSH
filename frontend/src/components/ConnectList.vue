@@ -9,6 +9,7 @@ import { GetServerList, ServerConnection } from "../../wailsjs/go/service/Connec
 
 import { useRouter } from "vue-router";
 import EditConnect from "../dialogs/EditConnect.vue";
+import { entity } from "../../wailsjs/go/models";
 
 const router = useRouter()
 const message = useMessage();
@@ -21,7 +22,7 @@ function newConnectVisible() {
 }
 
 // 服务器列表
-let serverList = ref()
+let serverList = ref<entity.SSHConfig[]>()
 
 onMounted(() => {
   getServerList();
@@ -56,10 +57,11 @@ function connectServer(sshConfig: any) {
 }
 
 // 编辑服务器连接
-function editServer(sshConfig: any) {
+function editServer() {
   // 展示编辑模态框，并将数据进行传递
   dialogStore.editConnectDialogVisible = true;
 }
+
 </script>
 
 <template>
@@ -85,7 +87,6 @@ function editServer(sshConfig: any) {
           </template>
           添加新连接
         </n-button>
-
       </n-gi>
       <n-gi :span="1">
 
@@ -133,6 +134,7 @@ function editServer(sshConfig: any) {
           添加新连接
         </n-button>
       </n-gi>
+
     </n-grid>
     <n-config-provider
         :theme-overrides="{
@@ -162,7 +164,7 @@ function editServer(sshConfig: any) {
                     type="tertiary"
                     style="float: right;"
                     v-show="server.edit"
-                    @click.stop="editServer(server)"
+                    @click.stop="editServer"
                 >
                   <template #icon>
                     <n-icon size="20">
@@ -172,6 +174,10 @@ function editServer(sshConfig: any) {
 
                 </n-button>
               </p>
+
+              <!-- 编辑连接模态框 -->
+              <EditConnect :ssh-connect-config="server">
+              </EditConnect>
             </n-card>
           </n-gi>
 
@@ -179,15 +185,8 @@ function editServer(sshConfig: any) {
 
       </n-scrollbar>
     </n-config-provider>
+    <NewConnect></NewConnect>
   </div>
-
-  <!-- 创建连接模态框 -->
-  <NewConnect></NewConnect>
-
-  <!-- 编辑连接模态框 -->
-  <EditConnect
-  >
-  </EditConnect>
 
 </template>
 

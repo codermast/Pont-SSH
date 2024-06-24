@@ -26,35 +26,6 @@ func InitDatabase() error {
 		return err
 	}
 
-	sql := "SELECT * FROM sshs"
-
-	rows, err := db.Query(sql)
-
-	if err != nil {
-		return err
-	}
-
-	i := 1
-	// 遍历结果集
-	for rows.Next() {
-		var id, host, username, password, comment string
-		var port int
-		if err := rows.Scan(&id, &host, &port, &username, &password, &comment); err != nil {
-			log.Printf("Scan error: %v", err)
-			return err
-		}
-		log.Printf("%d - Row: id=%s, host=%s, port=%d, username=%s, password=%s, comment=%s", i, id, host, port, username, password, comment)
-		i++
-	}
-
-	// 检查遍历过程中是否有错误
-	if err := rows.Err(); err != nil {
-		log.Printf("Row iteration error: %v", err)
-		return err
-	}
-
-	defer rows.Close()
-
 	return nil
 }
 
