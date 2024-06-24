@@ -9,4 +9,5 @@ type SSHConfig struct {
 	Password string `json:"password" yaml:"password"`
 	Name     string `json:"name" json:"name"`
 	Edit     bool   `json:"edit" yaml:"edit"`
+	Type     int    `json:"type" yaml:"type"`
 }

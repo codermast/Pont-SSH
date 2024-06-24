@@ -10,7 +10,7 @@ import (
 func SaveSshConnect(config entity.SSHConfig) error {
 
 	// 拼接 SQL
-	sql := `INSERT INTO sshs (id,server,port,username,password,name,edit) VALUES (?,?,?,?,?,?,?)`
+	sql := `INSERT INTO sshs (id,server,port,username,password,name,edit,type) VALUES (?,?,?,?,?,?,?,?)`
 
 	err := Execute(sql,
 		uuid.New().String(),
@@ -19,7 +19,8 @@ func SaveSshConnect(config entity.SSHConfig) error {
 		config.Username,
 		config.Password,
 		config.Name,
-		1)
+		0,
+		config.Type)
 	if err != nil {
 		log.Println("Failed to save ssh connection")
 		return err
@@ -44,7 +45,15 @@ func GetServerList() ([]entity.SSHConfig, error) {
 	for rows.Next() {
 		var server entity.SSHConfig
 		var editInt int
-		err = rows.Scan(&server.Id, &server.Server, &server.Port, &server.Username, &server.Password, &server.Name, &editInt)
+		err = rows.Scan(
+			&server.Id,
+			&server.Server,
+			&server.Port,
+			&server.Username,
+			&server.Password,
+			&server.Name,
+			&editInt,
+			&server.Type)
 		if err != nil {
 			log.Printf("Failed to fetch ssh list")
 			return nil, err
@@ -64,7 +73,7 @@ func GetServerList() ([]entity.SSHConfig, error) {
 
 // UpdateConnection 更新连接
 func UpdateConnection(sshConfig entity.SSHConfig) error {
-	sql := "UPDATE sshs SET server = ? , port = ?,username = ?,password = ?, name = ?, edit = ? WHERE id = ?"
+	sql := "UPDATE sshs SET server = ? , port = ?,username = ?,password = ?, name = ?, edit = ?,type = ? WHERE id = ?"
 	var editInt int
 
 	if sshConfig.Edit == true {
@@ -72,7 +81,7 @@ func UpdateConnection(sshConfig entity.SSHConfig) error {
 	} else {
 		editInt = 0
 	}
-	err := Execute(sql, sshConfig.Server, sshConfig.Port, sshConfig.Username, sshConfig.Password, sshConfig.Name, editInt, sshConfig.Id)
+	err := Execute(sql, sshConfig.Server, sshConfig.Port, sshConfig.Username, sshConfig.Password, sshConfig.Name, editInt, sshConfig.Type, sshConfig.Id)
 	return err
 }
 
@@ -107,4 +116,17 @@ func SearchConnection(keyword string) ([]entity.SSHConfig, error) {
 		serverList = append(serverList, server)
 	}
 	return serverList, err
+}
+
+// DeleteServer 删除服务器
+func DeleteServer(serverId string) error {
+	sql := "DELETE FROM sshs WHERE id = ?"
+
+	log.Printf("ServerId ： " + serverId)
+
+	err := Execute(sql, serverId)
+	if err != nil {
+		log.Printf("Failed to delete server")
+	}
+	return err
 }

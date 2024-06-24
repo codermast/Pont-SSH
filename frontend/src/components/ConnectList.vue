@@ -5,11 +5,12 @@ import NewConnect from "../dialogs/NewConnect.vue";
 import { useDialogStore } from "../stores/dialogStore";
 import { NIcon, useMessage } from 'naive-ui'
 import Search from "./Search.vue";
-import { GetServerList, ServerConnection } from "../../wailsjs/go/service/Connection";
-
+import { DeleteServer, GetServerList, ServerConnection } from "../../wailsjs/go/service/Connection";
+import emitter from '../utils/emitter';
 import { useRouter } from "vue-router";
 import EditConnect from "../dialogs/EditConnect.vue";
 import { entity } from "../../wailsjs/go/models";
+import DeleteIcon from "../icons/DeleteIcon.vue";
 
 const router = useRouter()
 const message = useMessage();
@@ -27,6 +28,8 @@ let serverList = ref<entity.SSHConfig[]>()
 onMounted(() => {
   getServerList();
 })
+
+emitter.on('reloadServerList', getServerList)
 
 // 获取服务器列表
 function getServerList() {
@@ -57,18 +60,57 @@ function connectServer(sshConfig: any) {
 }
 
 // 编辑服务器连接
-function editServer() {
+function editServer(serverConfig: entity.SSHConfig) {
+  // 发送数据
+  emitter.emit('sendEditSSHConfig', serverConfig)
   // 展示编辑模态框，并将数据进行传递
   dialogStore.editConnectDialogVisible = true;
 }
 
+// 删除服务器连接
+function deleteServer(sshConfig: entity.SSHConfig) {
+
+  console.log("sshConfig", sshConfig)
+
+  DeleteServer(sshConfig.id).then((result) => {
+    if (result.code == 200) {
+      message.success(result.msg);
+    } else {
+      message.error(result.msg);
+    }
+  })
+}
+
+// 更新搜索结果
+function changeServerList(sshConfig: entity.SSHConfig[]) {
+  serverList.value = sshConfig;
+}
+
+// 获取服务器操作系统Logo
+function getOSLogo(osType: number): string {
+  let logoUrl = "/assets/"
+  switch (osType) {
+    case 1:
+      logoUrl += "ubuntu"
+      break;
+    case 2:
+      logoUrl += "centos"
+      break;
+    case 3:
+      logoUrl += "debian"
+      break;
+    default:
+      logoUrl += "linux"
+  }
+  return logoUrl + "-logo.png";
+}
 </script>
 
 <template>
   <div class="server-list">
     <n-grid :cols="1">
       <n-gi :span="1">
-        <Search></Search>
+        <Search :change-server-list="changeServerList"></Search>
       </n-gi>
     </n-grid>
 
@@ -157,27 +199,67 @@ function editServer() {
                 @mouseout="server.edit = false"
                 @click="connectServer(server)"
             >
-              <p style="line-height: 20px;vertical-align: center">{{ server.server + "," + server.username }}
-                <n-button
-                    round
-                    dashed
-                    type="tertiary"
-                    style="float: right;"
-                    v-show="server.edit"
-                    @click.stop="editServer"
+              <n-flex>
+                <n-image
+                    :src="getOSLogo(server.type)"
+                    width="140px"
+                    height="100%"
+                    style="margin-left: -20px"
                 >
-                  <template #icon>
-                    <n-icon size="20">
-                      <pencil></pencil>
-                    </n-icon>
+                </n-image>
+                <div>
+                  <p>{{ server.server }}</p>
+                  <p>{{ server.username }}</p>
+                </div>
+                <!-- 编辑按钮 -->
+                <n-tooltip trigger="hover" placement="top-start">
+                  <template #trigger>
+                    <n-button
+                        round
+                        type="success"
+                        style="float: right;
+                                position: absolute;
+                                bottom: 20px;
+                                right: 20px;"
+                        v-show="server.edit"
+                        @click.stop="editServer(server)"
+                    >
+                      <template #icon>
+                        <n-icon size="20">
+                          <pencil></pencil>
+                        </n-icon>
+                      </template>
+
+                    </n-button>
                   </template>
+                  编辑连接
+                </n-tooltip>
 
-                </n-button>
-              </p>
+                <!-- 删除按钮 -->
+                <n-tooltip trigger="hover" placement="top-start">
+                  <template #trigger>
+                    <n-button
+                        round
+                        type="error"
+                        style="float: right;
+                                position: absolute;
+                                bottom: 60px;
+                                right: 20px;"
+                        v-show="server.edit"
+                        @click.stop="deleteServer(server)"
+                    >
+                      <template #icon>
+                        <n-icon size="20">
+                          <delete-icon></delete-icon>
+                        </n-icon>
+                      </template>
 
-              <!-- 编辑连接模态框 -->
-              <EditConnect :ssh-connect-config="server">
-              </EditConnect>
+                    </n-button>
+                  </template>
+                  删除连接
+                </n-tooltip>
+              </n-flex>
+
             </n-card>
           </n-gi>
 
@@ -186,6 +268,9 @@ function editServer() {
       </n-scrollbar>
     </n-config-provider>
     <NewConnect></NewConnect>
+    <!-- 编辑连接模态框 -->
+    <EditConnect></EditConnect>
+
   </div>
 
 </template>
@@ -214,7 +299,8 @@ function editServer() {
 }
 
 .server-card {
-  width: 90%;
+  height: 150px;
+  width: 95%;
   margin: 10px auto 10px;
 }
 

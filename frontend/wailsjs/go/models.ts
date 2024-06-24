@@ -44,6 +44,7 @@ export namespace entity {
 	    password: string;
 	    name: string;
 	    edit: boolean;
+	    type: number;
 	
 	    static createFrom(source: any = {}) {
 	        return new SSHConfig(source);
@@ -58,6 +59,7 @@ export namespace entity {
 	        this.password = source["password"];
 	        this.name = source["name"];
 	        this.edit = source["edit"];
+	        this.type = source["type"];
 	    }
 	}
 
