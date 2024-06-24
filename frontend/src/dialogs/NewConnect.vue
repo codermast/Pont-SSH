@@ -4,6 +4,8 @@ import { entity } from '../../wailsjs/go/models'
 import { SaveConnection, TestConnection } from '../../wailsjs/go/service/Connection'
 import { useMessage } from 'naive-ui'
 import { useDialogStore } from "../stores/dialogStore";
+import emitter from "../utils/emitter";
+import { osTypeOptions } from "../utils/options";
 
 const dialogStore = useDialogStore()
 
@@ -18,8 +20,8 @@ const sshConfig = ref<entity.SSHConfig>(
       password: "",
       name: "",
       edit: false,
+      type: 0
     }
-
 );
 
 function testConnect() {
@@ -40,6 +42,9 @@ function saveConnect() {
     if (result.code == 200) {
       message.success(result.msg)
       dialogStore.newConnectDialogVisible = false;
+
+      // 触发重新加载事件
+      emitter.emit("reloadServerList");
     } else {
       message.error(result.msg)
     }
@@ -50,6 +55,7 @@ function saveConnect() {
 function cancelClick() {
   dialogStore.newConnectDialogVisible = false;
 }
+
 </script>
 
 <template>
@@ -74,6 +80,11 @@ function cancelClick() {
           >
             <n-form-item label="名称">
               <n-input v-model:value="sshConfig.name" placeholder="输入服务器名称"></n-input>
+            </n-form-item>
+            <n-form-item label="操作系统">
+              <n-select v-model:value="sshConfig.type"
+                        :options="osTypeOptions"
+              />
             </n-form-item>
             <n-form-item label="服务器IP">
               <n-input v-model:value="sshConfig.server" placeholder="输入服务器IP"/>

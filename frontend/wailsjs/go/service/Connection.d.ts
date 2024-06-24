@@ -3,6 +3,8 @@
 import {entity} from '../models';
 import {context} from '../models';
 
+export function DeleteServer(arg1:string):Promise<entity.Result>;
+
 export function GetServerList():Promise<entity.Result>;
 
 export function GetWebSocketPort():Promise<number>;

@@ -298,3 +298,19 @@ func (c *Connection) SearchConnection(keyword string) entity.Result {
 
 	return utils.SuccessData(data)
 }
+
+// DeleteServer 删除服务器
+func (c *Connection) DeleteServer(serverId string) entity.Result {
+	if serverId == "" {
+		return utils.Error("服务器 ID 为空")
+	}
+
+	err := database.DeleteServer(serverId)
+
+	if err != nil {
+		log.Println("Delete server id error:", err)
+		return utils.Error("删除失败")
+	}
+
+	return utils.SuccessMsg("删除成功")
+}
