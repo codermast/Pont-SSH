@@ -1,0 +1,13 @@
+general:
+  theme: dark
+  language: default
+  font-family: default
+terminal:
+  theme: dark
+  font-family: default
+  font-size: 20
+  line-number: true
+  jump-target: true
+network:
+  speed: false
+other:

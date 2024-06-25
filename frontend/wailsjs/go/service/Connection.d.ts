@@ -15,6 +15,8 @@ export function SearchConnection(arg1:string):Promise<entity.Result>;
 
 export function ServerConnection(arg1:entity.SSHConfig):Promise<entity.Result>;
 
+export function Shutdown(arg1:context.Context):Promise<void>;
+
 export function Startup(arg1:context.Context):Promise<void>;
 
 export function TestConnection(arg1:entity.SSHConfig):Promise<entity.Result>;
