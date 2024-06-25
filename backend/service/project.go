@@ -7,7 +7,6 @@ import (
 	"context"
 	"database/sql"
 	_ "embed"
-	"github.com/vrischmann/userdir"
 	"log"
 	"os"
 	"path/filepath"
@@ -23,8 +22,22 @@ func NewProject() *Project {
 
 // Startup 启动方法
 func (p *Project) Startup(ctx context.Context) {
+	// 加载数据库信息
+	loadDatabase()
+}
 
-	filePath := filepath.Join(userdir.GetConfigHome(), "PontSSH", "pontssh.db")
+// Shutdown 销毁方法
+func (p *Project) Shutdown(ctx context.Context) {
+	err := database.CloseDatabase()
+
+	if err != nil {
+		log.Println("关闭数据库连接失败！")
+	}
+}
+
+// loadDatabase 加载数据库信息
+func loadDatabase() {
+	filePath := constant.DatabaseFilePath
 
 	log.Println("文件路径：" + filePath)
 
@@ -72,15 +85,5 @@ func (p *Project) Startup(ctx context.Context) {
 		}
 	} else {
 		log.Println("数据库已经存在，则不必初始化！")
-	}
-
-}
-
-// Shutdown 销毁方法
-func (p *Project) Shutdown() {
-	err := database.CloseDatabase()
-
-	if err != nil {
-		log.Println("关闭数据库连接失败！")
 	}
 }

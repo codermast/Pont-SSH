@@ -6,3 +6,5 @@ import (
 )
 
 var DatabaseFilePath = filepath.Join(userdir.GetConfigHome(), "PontSSH", "pontssh.db")
+
+var ConfigFilePath = filepath.Join(userdir.GetConfigHome(), "PontSSH", "config.yaml")

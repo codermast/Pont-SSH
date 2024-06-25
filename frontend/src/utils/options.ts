@@ -19,3 +19,31 @@ export let osTypeOptions = ref([
 		value: 0
 	}
 ]);
+
+// 语言选项列表
+export let languages = ref([
+	{
+		label: '系统默认',
+		value: "default",
+	}, {
+		label: '简体中文',
+		value: "zh_cn",
+	}, {
+		label: '繁体中文',
+		value: "zh_hk",
+	}, {
+		label: 'English',
+		value: "en",
+	}
+])
+
+// 字体选项列表
+export let fontFamilies = ref([
+	{
+		label : '系统默认',
+		value: "default",
+	},{
+		label : 'Apple',
+		value: "apple",
+	}
+])

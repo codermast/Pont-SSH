@@ -21,6 +21,7 @@ func main() {
 	project := service.NewProject()
 	connection := service.NewConnection()
 	logInfo := service.NewLogInfo()
+	config := service.NewConfig()
 
 	app := &options.App{
 		Title:     "Pont SSH 连接工具",
@@ -33,13 +34,18 @@ func main() {
 		},
 		OnStartup: func(ctx context.Context) {
 			project.Startup(ctx)
+			config.Startup(ctx)
 			connection.Startup(ctx)
 		},
-		OnShutdown: connection.Shutdown,
+		OnShutdown: func(ctx context.Context) {
+			connection.Shutdown(ctx)
+			config.Shutdown(ctx)
+		},
 		Bind: []interface{}{
 			project,
 			connection,
 			logInfo,
+			config,
 		},
 		// Mac 配置
 		Mac: &mac.Options{
