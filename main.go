@@ -49,7 +49,14 @@ func main() {
 		},
 		// Mac 配置
 		Mac: &mac.Options{
-			TitleBar:   mac.TitleBarDefault(),
+			TitleBar: &mac.TitleBar{
+				TitlebarAppearsTransparent: false, // 标题栏透明
+				HideTitle:                  false, // 隐藏标题
+				HideTitleBar:               false, // 隐藏标题栏
+				FullSizeContent:            false, // 内容充满
+				UseToolbar:                 false, // 不使用工具栏
+				HideToolbarSeparator:       false, // 隐藏标题栏分隔符
+			},
 			Appearance: mac.DefaultAppearance,
 			About: &mac.AboutInfo{
 				Title:   "About",
