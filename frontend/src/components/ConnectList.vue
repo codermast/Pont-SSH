@@ -201,6 +201,7 @@ function getOSLogo(osType: number): string {
             >
               <n-flex>
                 <n-image
+                    preview-disabled
                     :src="getOSLogo(server.type)"
                     width="140px"
                     height="100%"

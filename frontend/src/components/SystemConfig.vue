@@ -6,6 +6,8 @@ import Reset from '../icons/Reset.vue'
 import { useMessage } from "naive-ui"
 import { fontFamilies, languages } from "../utils/options";
 import { GetConfig, ResetConfig, SaveConfig } from "../../wailsjs/go/service/Config";
+import {useConfigStore} from "../stores/configStore";
+const configStore = useConfigStore();
 
 const message = useMessage();
 
@@ -34,23 +36,14 @@ let config = ref({
 let {general, terminal, network, other} = toRefs(config.value)
 
 onMounted(() => {
-  getConfig();
+  // 获取配置信息数据
+  general.value = configStore.systemConfig.General;
+  terminal.value = configStore.systemConfig.Terminal;
+  network.value = configStore.systemConfig.Network;
+  other.value = configStore.systemConfig.Other;
 })
 
-// 1. 获取配置信息
-function getConfig() {
-  GetConfig().then((result) => {
-    console.log(result)
-    if (result.code == 200) {
-      general.value = result.data.General;
-      terminal.value = result.data.Terminal;
-      network.value = result.data.Network;
-      other.value = result.data.Other;
-    } else {
-      message.error(result.msg)
-    }
-  })
-}
+
 
 // 重置配置
 function resetConfig() {
@@ -80,7 +73,10 @@ function applyConfig() {
 
 // 取消
 function cancelConfig() {
-  getConfig();
+  general.value = configStore.systemConfig.General;
+  terminal.value = configStore.systemConfig.Terminal;
+  network.value = configStore.systemConfig.Network;
+  other.value = configStore.systemConfig.Other;
 
   message.info("配置取消修改，已还原");
 }

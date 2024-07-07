@@ -4,24 +4,27 @@ import { Terminal } from 'xterm';
 import { FitAddon } from 'xterm-addon-fit'
 import { useMessage } from 'naive-ui'
 import 'xterm/css/xterm.css';
-import { useRouter } from 'vue-router'
 import { useConfigStore } from "../stores/configStore";
 import { WebLinksAddon } from '@xterm/addon-web-links'
 import { BrowserOpenURL } from "../../wailsjs/runtime";
 import ErrorConnect from "../dialogs/ErrorConnect.vue";
 import { useDialogStore } from "../stores/dialogStore";
+import { GetConfig } from "../../wailsjs/go/service/Config";
 
-const router = useRouter()
 const message = useMessage();
 const configStore = useConfigStore();
 const dialogStore = useDialogStore();
 
-const terminal = new Terminal({
+
+
+// 初始化 Terminal 对象
+let terminal = new Terminal({
       fontSize: 16,
       theme: {
         background: '#2f3440', // 设置背景颜色
-        foreground: '#ffffff'  // 设置前景（文本）颜色
-      }
+        foreground: '#ffffff', // 设置前景（文本）颜色
+      },
+      cursorBlink: true,  // 设置光标闪烁
     }
 );
 const terminalContainer = ref(null)
@@ -34,6 +37,7 @@ const webLinksAddon = new WebLinksAddon(handleLink);
 let socket: WebSocket;
 
 onMounted(() => {
+
   // WebSocket Url
   const url = "ws://localhost:" + configStore.webSocketPort + '/ws';
   socket = new WebSocket(url);
@@ -122,7 +126,9 @@ terminal.onData(data => {
 terminal.onKey(event => {
   // 如果按下的是 Ctrl 键并且同时按下了 C 键，则发送 Ctrl + C 组合键信息
   if (event.domEvent.ctrlKey && event.key === 'c') {
-
+    // Ctrl+C 被按下
+    // 进行处理...
+    console.log("Ctrl+C 被按下");
   }
 
   if (event.key === 'v' && event.domEvent.ctrlKey) {

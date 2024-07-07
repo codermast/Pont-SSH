@@ -6,5 +6,8 @@ export const useConfigStore = defineStore('configStore', () => {
 	// WebSocket Port
 	let webSocketPort = ref(54321);
 
-	return { webSocketPort }
+	// 系统设置
+	let systemConfig = ref()
+
+	return { webSocketPort,systemConfig }
 })
