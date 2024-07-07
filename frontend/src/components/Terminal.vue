@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
-import { Terminal } from 'xterm';
+import { onMounted, onUnmounted, ref } from 'vue'
+import { ITheme, Terminal } from 'xterm';
 import { FitAddon } from 'xterm-addon-fit'
 import { useMessage } from 'naive-ui'
 import 'xterm/css/xterm.css';
@@ -9,33 +9,110 @@ import { WebLinksAddon } from '@xterm/addon-web-links'
 import { BrowserOpenURL } from "../../wailsjs/runtime";
 import ErrorConnect from "../dialogs/ErrorConnect.vue";
 import { useDialogStore } from "../stores/dialogStore";
-import { GetConfig } from "../../wailsjs/go/service/Config";
 
 const message = useMessage();
 const configStore = useConfigStore();
 const dialogStore = useDialogStore();
 
+const terminalConfig = configStore.systemConfig.Terminal;
 
+// 深色主题
+const darkTheme = {
+  background: '#2f3440',
+  foreground: '#ffffff',
+  cursor: '#ffffff',
+  selection: 'rgba(255, 255, 255, 0.3)',
+  black: '#000000',
+  red: '#ff0000',
+  green: '#33ff00',
+  yellow: '#ffff00',
+  blue: '#0066ff',
+  magenta: '#cc00ff',
+  cyan: '#00ffff',
+  white: '#d0d0d0',
+  brightBlack: '#808080',
+  brightRed: '#ff0000',
+  brightGreen: '#33ff00',
+  brightYellow: '#ffff00',
+  brightBlue: '#0066ff',
+  brightMagenta: '#cc00ff',
+  brightCyan: '#00ffff',
+  brightWhite: '#ffffff'
+};
+
+// 浅色主题
+const lightTheme = {
+  background: '#ffffff',
+  foreground: '#000000',
+  cursor: '#000000',
+  selection: 'rgba(0, 0, 0, 0.3)',
+  black: '#000000',
+  red: '#ff0000',
+  green: '#33ff00',
+  yellow: '#ffff00',
+  blue: '#0066ff',
+  magenta: '#cc00ff',
+  cyan: '#00ffff',
+  white: '#d0d0d0',
+  brightBlack: '#808080',
+  brightRed: '#ff0000',
+  brightGreen: '#33ff00',
+  brightYellow: '#ffff00',
+  brightBlue: '#0066ff',
+  brightMagenta: '#cc00ff',
+  brightCyan: '#00ffff',
+  brightWhite: '#ffffff'
+};
+
+
+//  terminal 容器
+let terminalContainerStyle = ref({
+  backgroundColor : '#ffffff'
+})
+
+
+function getTerminalBuildOperation() {
+
+  let theme: ITheme;
+
+  if (terminalConfig.Theme == "light") {
+    theme = lightTheme;
+    terminalContainerStyle.value.backgroundColor = '#ffffff';
+  }else if (terminalConfig.Theme == "dark") {
+    theme = darkTheme;
+    terminalContainerStyle.value.backgroundColor = '#2f3440';
+  }else{
+    let themePlan = window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+    if (themePlan) {
+      theme = darkTheme;
+      terminalContainerStyle.value.backgroundColor = '#2f3440';
+    } else {
+      theme = lightTheme;
+      terminalContainerStyle.value.backgroundColor = '#ffffff';
+    }
+  }
+
+  return {
+    theme: theme,
+    fontSize: terminalConfig.FontSize,
+    cursorBlink: true,  // 设置光标闪烁
+  };
+}
 
 // 初始化 Terminal 对象
-let terminal = new Terminal({
-      fontSize: 16,
-      theme: {
-        background: '#2f3440', // 设置背景颜色
-        foreground: '#ffffff', // 设置前景（文本）颜色
-      },
-      cursorBlink: true,  // 设置光标闪烁
-    }
-);
+let terminal = new Terminal(getTerminalBuildOperation());
 const terminalContainer = ref(null)
 
 // 自适应
 const fitAddon = new FitAddon();
+
 // url 可点击
 const webLinksAddon = new WebLinksAddon(handleLink);
 
 let socket: WebSocket;
 
+// 页面挂载
 onMounted(() => {
 
   // WebSocket Url
@@ -46,7 +123,11 @@ onMounted(() => {
   if (terminalContainer.value) {
     // 绑定自适应
     terminal.loadAddon(fitAddon);
-    terminal.loadAddon(webLinksAddon);
+
+    // 允许连接跳转时才配置跳转
+    if (terminalConfig.JumpTarget) {
+      terminal.loadAddon(webLinksAddon);
+    }
 
     terminal.open(terminalContainer.value)
 
@@ -62,16 +143,30 @@ onMounted(() => {
     terminal.write(event.data);
   };
 
+  // 优先输出的是 error，控制只输出一个
+  let onclose = true;
+
   socket.onclose = (event) => {
-    terminal.write('连接关闭');
-    dialogStore.errorConnectDialogVisible = true;
+    if (onclose) {
+      terminal.write('连接关闭');
+      dialogStore.errorConnectDialogVisible = true;
+      onclose = false;
+    }
   };
 
   socket.onerror = (error) => {
-    terminal.write('连接异常');
-    dialogStore.errorConnectDialogVisible = true;
+    if (onclose) {
+      terminal.write('连接异常');
+      dialogStore.errorConnectDialogVisible = true;
+      onclose = false;
+    }
   };
 });
+
+// 页面卸载
+onUnmounted(() => {
+  terminal.dispose();
+})
 
 // 存储用户输入
 let buffer: string[] = [];
@@ -157,7 +252,7 @@ function handleLink(event: any, url: string) {
 
 
 <template>
-  <div class="terminal-container">
+  <div class="terminal-container" :style="terminalContainerStyle">
     <div class="terminal-box">
       <div class="terminal" ref="terminalContainer"></div>
     </div>
@@ -171,7 +266,6 @@ function handleLink(event: any, url: string) {
 .terminal-container {
   height: 100vh;
   width: 100%;
-  background-color: #2f3440;
 }
 
 .terminal-box {
