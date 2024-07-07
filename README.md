@@ -1,7 +1,7 @@
 # Pont SSH 连接工具
 
-![连接管理](screenshot/connection.png)
-![日志管理](screenshot/loginfo.png)
+![深色模式](screenshot/theme-dark.png)
+![浅色模式](screenshot/theme-light.png)
 
 ## 项目介绍
 
