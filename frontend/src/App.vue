@@ -1,44 +1,78 @@
 <script setup lang="ts">
-import { GetWebSocketPort } from '../wailsjs/go/service/Connection'
-import { useConfigStore } from "./stores/configStore";
-import { onMounted, } from "vue";
+import { Environment, WindowToggleMaximise } from '../wailsjs/runtime'
+import { onMounted, ref } from "vue";
+import { TerminalOutline } from '@vicons/ionicons5'
 
-const configStore = useConfigStore();
+let os = ''
 
-onMounted(() => {
-  // 初始化 WebSocket 端口
-  GetWebSocketPort().then(port => {
-    configStore.webSocketPort = port;
+let logoPaddingLeft = ref(80)
 
-    // console.log('ws://localhost:' + port + '/ws');
-  })
+
+onMounted(async () => {
+  await loadEnvironment()
+
+  if (isWindows()) {
+    logoPaddingLeft.value = 10;
+  }
 })
+
+async function loadEnvironment() {
+  const env = await Environment()
+  console.log("env", env)
+  os = env.platform
+}
+
+function isMacOS() {
+  return os === 'darwin'
+}
+
+function isWindows() {
+  return os === 'windows'
+}
+
+
 </script>
 
 <template>
 
-  <div class="container">
-    <n-dialog-provider>
-      <n-modal-provider>
-        <n-message-provider>
-          <n-grid :cols="1">
-            <n-gi :span="1" >
-              <router-view></router-view>
-            </n-gi>
-          </n-grid>
-        </n-message-provider>
-      </n-modal-provider>
-    </n-dialog-provider>
-  </div>
+  <!-- title bar -->
+  <div
+      style="--wails-draggable: drag;
+      user-select:none;
+        height: 38px;
+        background-color: #f5f6f7;
+         display: flex;
+        align-items: center;
+"
+      @dblclick="WindowToggleMaximise">
 
+    <!-- title -->
+    <div
+        :style="{
+            paddingLeft: `${logoPaddingLeft}px`,
+            display: `flex`,
+            alignItems: `center`,
+        }">
+      <n-icon :size="20">
+        <TerminalOutline/>
+      </n-icon>
+
+      <div
+          style="
+                min-width: 68px;
+                white-space: nowrap;
+                font-weight: 800;
+                padding-left: 10px;
+            "
+      >
+        Pont SSH
+      </div>
+    </div>
+  </div>
+  <router-view></router-view>
 
 </template>
 
 <style scoped>
 
-.container {
-  overflow: hidden;
-  padding: 0;
-  margin: 0;
-}
 </style>

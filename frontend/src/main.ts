@@ -10,8 +10,10 @@ import router from './router'
 // 创建pinia
 const pinia = createPinia()
 
+import naive from 'naive-ui'
 
 let app = createApp(App);
 app.use(pinia)
 app.use(router)
 app.mount('#app')
+app.use(naive)
