@@ -9,6 +9,7 @@ import (
 	"github.com/wailsapp/wails/v2/pkg/options"
 	"github.com/wailsapp/wails/v2/pkg/options/assetserver"
 	"github.com/wailsapp/wails/v2/pkg/options/mac"
+	"runtime"
 )
 
 //go:embed all:frontend/dist
@@ -23,12 +24,15 @@ func main() {
 	logInfo := service.NewLogInfo()
 	config := service.NewConfig()
 
+	isMacOS := runtime.GOOS == "darwin"
+
 	app := &options.App{
 		Title:     "Pont SSH 连接工具",
 		Width:     1024,
 		Height:    720,
 		MinWidth:  constant.MIN_WINDOW_WIDTH,
 		MinHeight: constant.MIN_WINDOW_HEIGHT,
+		Frameless: !isMacOS,
 		AssetServer: &assetserver.Options{
 			Assets: assets,
 		},
@@ -49,14 +53,7 @@ func main() {
 		},
 		// Mac 配置
 		Mac: &mac.Options{
-			TitleBar: &mac.TitleBar{
-				TitlebarAppearsTransparent: false, // 标题栏透明
-				HideTitle:                  false, // 隐藏标题
-				HideTitleBar:               false, // 隐藏标题栏
-				FullSizeContent:            false, // 内容充满
-				UseToolbar:                 false, // 不使用工具栏
-				HideToolbarSeparator:       false, // 隐藏标题栏分隔符
-			},
+			TitleBar:   mac.TitleBarHiddenInset(),
 			Appearance: mac.DefaultAppearance,
 			About: &mac.AboutInfo{
 				Title:   "About",
